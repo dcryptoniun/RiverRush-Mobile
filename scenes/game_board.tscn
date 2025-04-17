@@ -148,7 +148,7 @@ offset_right = 625.0
 offset_bottom = 500.0
 texture = ExtResource("4_ixnwj")
 
-[node name="Switch" type="TextureRect" parent="MarginContainer/Stones"]
+[node name="Switch1" type="TextureRect" parent="MarginContainer/Stones"]
 layout_mode = 0
 offset_left = 55.0
 offset_top = 873.0
@@ -164,7 +164,7 @@ offset_right = 228.0
 offset_bottom = 766.0
 texture = ExtResource("6_ixnwj")
 
-[node name="Frog" type="TextureRect" parent="MarginContainer/Stones"]
+[node name="Frog1" type="TextureRect" parent="MarginContainer/Stones"]
 layout_mode = 0
 offset_left = 323.0
 offset_top = 1054.0
@@ -188,7 +188,7 @@ offset_right = 103.0
 offset_bottom = 736.0
 texture = ExtResource("5_ixnwj")
 
-[node name="Duck" type="TextureRect" parent="MarginContainer/Stones"]
+[node name="Duck1" type="TextureRect" parent="MarginContainer/Stones"]
 layout_mode = 0
 offset_left = -14.0
 offset_top = 968.0
@@ -228,7 +228,7 @@ offset_right = 658.0
 offset_bottom = 863.0
 texture = ExtResource("3_ixnwj")
 
-[node name="Dice" type="TextureRect" parent="MarginContainer/Stones"]
+[node name="Dice1" type="TextureRect" parent="MarginContainer/Stones"]
 layout_mode = 0
 offset_left = 207.0
 offset_top = 1069.0
