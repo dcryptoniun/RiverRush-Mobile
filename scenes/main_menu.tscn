@@ -1,0 +1,71 @@
+[gd_scene load_steps=3 format=3 uid="uid://8busquollqwo"]
+
+[ext_resource type="Script" uid="uid://pa04vd2x2510" path="res://scripts/main_menu.gd" id="1_ekxnf"]
+[ext_resource type="PackedScene" uid="uid://cgjc6axagv27g" path="res://scenes/tilemap.tscn" id="1_l6cm7"]
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_ekxnf")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="RiverTile" parent="CanvasLayer" instance=ExtResource("1_l6cm7")]
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(3.60981e-08, 0.259883, 0.259915, 1)
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_top = 50
+theme_override_constants/margin_right = 50
+theme_override_constants/margin_bottom = 50
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/MarginContainer"]
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_constants/separation = 25
+
+[node name="OptionButton" type="OptionButton" parent="CanvasLayer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+theme_override_font_sizes/font_size = 32
+alignment = 1
+item_count = 3
+popup/item_0/text = "2player"
+popup/item_0/id = 0
+popup/item_1/text = "3player"
+popup/item_1/id = 1
+popup/item_2/text = "4player"
+popup/item_2/id = 2
+
+[node name="StartButton" type="Button" parent="CanvasLayer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+theme_override_font_sizes/font_size = 64
+text = "Start"
+
+[node name="RiverRushLabel" type="Label" parent="CanvasLayer/MarginContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 64
+text = "River Rush"
+horizontal_alignment = 1
+
+[connection signal="pressed" from="CanvasLayer/MarginContainer/VBoxContainer/StartButton" to="." method="_on_start_button_pressed"]
