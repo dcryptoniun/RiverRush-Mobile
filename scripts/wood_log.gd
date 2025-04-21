@@ -58,3 +58,18 @@ func _process(delta):
 			print("Log moved off screen (bottom)")
 			# Reset position for next time
 			position = Vector2(-132, -132)
+			
+			# Signal that the log movement is complete
+			# This allows the game to know when to check for collisions
+			movement_complete()
+
+# Function to handle movement completion
+func movement_complete():
+	# This function can be connected to by the game board
+	# to handle any post-movement logic
+	print("Log movement complete")
+	
+	# Reset for next use
+	await get_tree().create_timer(0.5).timeout
+	# Ready for next movement
+	position = Vector2(-132, -132)
