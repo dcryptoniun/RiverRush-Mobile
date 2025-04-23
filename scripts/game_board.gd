@@ -23,12 +23,13 @@ var player_colors = [
 	Color(0.1, 0.9, 0.1, 0.8),  # Green (Player 3)
 	Color(0.9, 0.9, 0.1, 0.8)   # Yellow (Player 4)
 ]
+var player_count = 2  # Default player count if not specified
 var player_rects = []  # Array to store all player rectangles
 var player_positions = []  # Array to store positions of all players
 var player_checkpoints = []  # Array to store checkpoints of all players
 var player_path_follows = []  # Array to store PathFollow2D nodes for each player
 var player_tweens = []  # Array to store tweens for each player
-var current_player_index = 0  # Index of the current player (0-3)
+var current_player_index = 0  # Index of the current player
 var player_turn_label = null  # Label to display current player's turn
 
 var stone_node_positions = {}  # Will store actual positions of stones in the scene
@@ -38,6 +39,11 @@ var is_moving = false  # Flag to track if player is currently moving
 func _ready():
 	# Initialize the game board
 	print("Game board initialized")
+	
+	# Get player count from scene parameters if available
+	if get_tree().get_current_scene().get_meta("player_count") != null:
+		player_count = get_tree().get_current_scene().get_meta("player_count")
+		print("Player count set to: ", player_count)
 	
 	# The board is already set up to stay centered using CanvasLayer and CenterContainer
 	# This ensures it maintains its position regardless of screen resolution
@@ -216,8 +222,8 @@ func create_player():
 	player_turn_label.text = "Player 1's Turn"
 	player_turn_label.add_theme_color_override("font_color", player_colors[0])
 	
-	# Create all four players
-	for i in range(4):
+	# Create players based on player_count
+	for i in range(player_count):
 		# Create a PathFollow2D for this player
 		var path_follow = PathFollow2D.new()
 		path_2d.add_child(path_follow)
@@ -450,8 +456,8 @@ func _process(delta):
 			# Get the log position once for all collision checks
 			var log_pos = wood_log_node.global_position
 			
-			# Check collision for ALL players, not just the current player
-			for i in range(player_rects.size()):
+			# Check collision only for active players based on player_count
+			for i in range(player_count):
 				var player = player_rects[i]
 				var player_pos = player_positions[i]
 				
@@ -534,8 +540,8 @@ func move_player(player_node, steps):
 	
 	# If player didn't land on a dice stone, move to the next player's turn
 	if not is_dice_stone:
-		# Move to the next player's turn
-		current_player_index = (current_player_index + 1) % 4
+		# Move to the next player's turn based on player_count
+		current_player_index = (current_player_index + 1) % player_count
 		print("Now it's Player ", current_player_index + 1, "'s turn")
 		
 		# Update the player turn label
