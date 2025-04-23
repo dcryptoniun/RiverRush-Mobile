@@ -400,19 +400,30 @@ func _process(delta):
 			# Disable dice button or show visual indicator that dice can't be rolled
 			# This would be implemented by connecting to UI elements
 			
-			# Check collision for the current player
-			var current_player = player_rects[current_player_index]
-			var current_pos = player_positions[current_player_index]
+			# Get the log position once for all collision checks
+			var log_pos = wood_log_node.global_position
 			
-			# Simple collision detection - if wood log is moving and player is in unsafe position
-			if not is_safe_position(current_pos):
-				# Check if wood log is near player's vertical position
-				var log_pos = wood_log_node.global_position
-				var player_pos = current_player.global_position
+			# Check collision for ALL players, not just the current player
+			for i in range(player_rects.size()):
+				var player = player_rects[i]
+				var player_pos = player_positions[i]
 				
-				# Simple vertical collision check (adjust values as needed)
-				if abs(log_pos.y - player_pos.y) < 100:
-					handle_wood_log_collision()
+				# Simple collision detection - if wood log is moving and player is in unsafe position
+				if not is_safe_position(player_pos):
+					# Check if wood log is near player's vertical position
+					var player_global_pos = player.global_position
+					
+					# Simple vertical collision check (adjust values as needed)
+					if abs(log_pos.y - player_global_pos.y) < 100:
+						# Temporarily set current_player_index to this player's index
+						var saved_player_index = current_player_index
+						current_player_index = i
+						
+						# Handle collision for this player
+						handle_wood_log_collision()
+						
+						# Restore the original current player index
+						current_player_index = saved_player_index
 
 # Function to handle player movement on the board
 func move_player(player_node, steps):
