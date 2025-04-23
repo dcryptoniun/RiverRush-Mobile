@@ -209,13 +209,12 @@ func store_stone_positions():
 
 # Function to create player placeholders
 func create_player():
-	# Create a Label to display current player's turn
-	player_turn_label = Label.new()
+	# Get reference to the player turn label in the scene
+	player_turn_label = %PlayerTurnLabel
+	
+	# Set initial text and color for player 1
 	player_turn_label.text = "Player 1's Turn"
 	player_turn_label.add_theme_color_override("font_color", player_colors[0])
-	player_turn_label.add_theme_font_size_override("font_size", 24)
-	player_turn_label.position = Vector2(20, 20)
-	add_child(player_turn_label)
 	
 	# Create all four players
 	for i in range(4):
