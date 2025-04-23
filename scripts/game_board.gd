@@ -16,13 +16,24 @@ var wood_log = null
 var log_direction = 1  # 1 for right to left, -1 for left to right
 var player_move_completed = true  # Flag to track if player movement is complete
 
-# Variables for player
-var player_rect = null
+# Variables for multiple players
+var player_colors = [
+	Color(0.9, 0.1, 0.1, 0.8),  # Red (Player 1)
+	Color(0.1, 0.1, 0.9, 0.8),  # Blue (Player 2)
+	Color(0.1, 0.9, 0.1, 0.8),  # Green (Player 3)
+	Color(0.9, 0.9, 0.1, 0.8)   # Yellow (Player 4)
+]
+var player_rects = []  # Array to store all player rectangles
+var player_positions = []  # Array to store positions of all players
+var player_checkpoints = []  # Array to store checkpoints of all players
+var player_path_follows = []  # Array to store PathFollow2D nodes for each player
+var player_tweens = []  # Array to store tweens for each player
+var current_player_index = 0  # Index of the current player (0-3)
+var player_turn_label = null  # Label to display current player's turn
+
 var stone_node_positions = {}  # Will store actual positions of stones in the scene
-var path_follow = null  # Reference to PathFollow2D for player movement
-var current_path_offset = 0.0  # Current position on the path
+var path_2d = null  # Reference to Path2D for player movement
 var is_moving = false  # Flag to track if player is currently moving
-var move_tween = null  # Reference to the tween for player movement
 
 func _ready():
 	# Initialize the game board
@@ -52,13 +63,13 @@ func _ready():
 	# Reference to the wood log scene - we don't instantiate it here anymore
 	# as it's already a separate scene that will be managed independently
 	
-	# Get reference to PathFollow2D for player movement
-	path_follow = $Path2D/PathFollow2D
+	# Get reference to Path2D for player movement
+	path_2d = $Path2D
 	
 	# Store positions of all stones for player movement
 	store_stone_positions()
 	
-	# Create player placeholder
+	# Create player placeholders
 	create_player()
 
 # Function to handle player movement on the board (implemented below)
@@ -134,15 +145,15 @@ func roll_dice():
 		is_rolling = false
 		
 		# Print the result for debugging
-		print("Dice rolled: ", current_dice_value)
+		print("Player ", current_player_index + 1, " rolled: ", current_dice_value)
 		
 		# Move player based on dice value (1-3 for regular faces)
 		var steps = current_dice_value
 		if steps > 3:
 			steps = steps - 3  # Convert 4,5,6 to 1,2,3 for brown faces
 		
-		# Move player - wood log movement will be triggered after player movement completes
-		move_player(player_rect, steps)
+		# Move current player - wood log movement will be triggered after player movement completes
+		move_player(player_rects[current_player_index], steps)
 		
 		# Note: Wood log movement is now handled in move_player after player movement completes
 	)
@@ -196,41 +207,85 @@ func store_stone_positions():
 				stone_node_positions[pos_key] = stone_node.global_position + Vector2(stone_node.size.x/2, stone_node.size.y/2)
 				print("Stored position for ", stone_name, ": ", stone_node_positions[pos_key])
 
-# Function to create player placeholder
+# Function to create player placeholders
 func create_player():
-	# Create a ColorRect as player placeholder
-	player_rect = ColorRect.new()
-	player_rect.color = Color(0.9, 0.1, 0.1, 0.8)  # Red color with some transparency
-	player_rect.custom_minimum_size = Vector2(30, 30)  # Size of player
+	# Create a Label to display current player's turn
+	player_turn_label = Label.new()
+	player_turn_label.text = "Player 1's Turn"
+	player_turn_label.add_theme_color_override("font_color", player_colors[0])
+	player_turn_label.add_theme_font_size_override("font_size", 24)
+	player_turn_label.position = Vector2(20, 20)
+	add_child(player_turn_label)
 	
-	# Add to PathFollow2D instead of directly to the scene
-	path_follow.add_child(player_rect)
+	# Create all four players
+	for i in range(4):
+		# Create a PathFollow2D for this player
+		var path_follow = PathFollow2D.new()
+		path_2d.add_child(path_follow)
+		path_follow.loop = false  # Don't loop around the path
+		path_follow.rotates = false  # Don't rotate the player along the path
+		path_follow.progress_ratio = 0.0  # Start at the beginning of the path
+		
+		# Create a ColorRect as player placeholder
+		var player = ColorRect.new()
+		player.color = player_colors[i]  # Set color based on player index
+		player.custom_minimum_size = Vector2(30, 30)  # Size of player
+		
+		# Add player to the PathFollow2D
+		path_follow.add_child(player)
+		
+		# Center the player on the path by setting its position to be exactly centered
+		# The position needs to be negative half of the player's size to center it on the path point
+		player.position = Vector2(-player.custom_minimum_size.x/2, -player.custom_minimum_size.y/2)
+		
+		# Offset each player slightly so they're all visible
+		player.position += Vector2(i * 10, i * 10)
+		
+		# Add player and PathFollow2D to our arrays
+		player_rects.append(player)
+		player_path_follows.append(path_follow)
+		player_tweens.append(null)  # Initialize tween array with null values
+		
+		# Initialize player position and checkpoint
+		player_positions.append(1)  # All players start at position 1
+		player_checkpoints.append(1)  # All players start with checkpoint at position 1
 	
-	# Center the player on the path
-	player_rect.position = Vector2(-player_rect.custom_minimum_size.x/2, -player_rect.custom_minimum_size.y/2)
-	
-	# Set initial position (start position)
-	player_position = 1  # Start at position 1
+	# Update the visual position of the current player
 	update_player_visual_position()
 
-# Function to update player visual position based on current player_position
+# Function to update player visual position based on current player's position
 func update_player_visual_position():
-	if not player_rect or not path_follow:
+	if player_rects.size() == 0 or player_path_follows.size() == 0:
 		return
 	
-	if is_moving and move_tween and move_tween.is_valid():
+	# Check if the current player is already moving
+	var current_tween = player_tweens[current_player_index]
+	if is_moving and current_tween and current_tween.is_valid():
 		return
+	
+	# Get current player's position
+	var position = player_positions[current_player_index]
 	
 	# Calculate path offset for the current position (0-1 range)
-	var target_offset = float(player_position - 1) / 25.0  # 26 positions, 0-25 index range
+	var target_offset = float(position - 1) / 25.0  # 26 positions, 0-25 index range
+	
+	# Get the PathFollow2D for the current player
+	var path_follow = player_path_follows[current_player_index]
 	
 	# Start movement animation
 	is_moving = true
-	move_tween = create_tween()
-	move_tween.tween_property(path_follow, "progress_ratio", target_offset, 0.5)
-	move_tween.tween_callback(func(): is_moving = false)
+	var tween = create_tween()
+	tween.tween_property(path_follow, "progress_ratio", target_offset, 0.5)
+	tween.tween_callback(func(): is_moving = false)
 	
-	print("Player moving to position ", player_position, " (path offset: ", target_offset, ")")
+	# Store the tween for this player
+	player_tweens[current_player_index] = tween
+	
+	print("Player ", current_player_index + 1, " moving to position ", position, " (path offset: ", target_offset, ")")
+	
+	# Update the player turn label
+	player_turn_label.text = "Player " + str(current_player_index + 1) + "'s Turn"
+	player_turn_label.add_theme_color_override("font_color", player_colors[current_player_index])
 
 # Board configuration
 var stone_positions = {
@@ -271,10 +326,10 @@ func process_stone_effect(position):
 	match stone.type:
 		"frog":
 			var jump_to = stone.jump_to
-			print("Frog stone! Jumping to position ", jump_to)
+			print("Player ", current_player_index + 1, " landed on a frog stone! Jumping to position ", jump_to)
 			return jump_to
 		"dice":
-			print("Dice stone! Rolling again...")
+			print("Player ", current_player_index + 1, " landed on a dice stone! Rolling again...")
 			# Add a small delay before rolling again
 			await get_tree().create_timer(0.5).timeout
 			
@@ -297,13 +352,13 @@ func process_stone_effect(position):
 			
 			return position
 		"checkpoint":
-			current_checkpoint = position
-			print("Checkpoint reached! New respawn point set to position ", position)
+			player_checkpoints[current_player_index] = position
+			print("Player ", current_player_index + 1, " reached checkpoint! New respawn point set to position ", position)
 			return position
 		_:
 			return position
 
-# Function to check if current position is safe from wood log
+# Function to check if a position is safe from wood log
 func is_safe_position(position):
 	if position in stone_positions:
 		return stone_positions[position].get("safe", false)
@@ -311,24 +366,25 @@ func is_safe_position(position):
 
 # Function to handle wood log collision
 func handle_wood_log_collision():
-	var current_pos = player_position
+	var current_pos = player_positions[current_player_index]
 	if is_safe_position(current_pos):
-		print("Safe on position ", current_pos, "!")
+		print("Player ", current_player_index + 1, " is safe on position ", current_pos, "!")
 		return
 	
 	# Make sure checkpoint is updated if player is at or beyond position 13
-	if player_position >= 13 and current_checkpoint < 13:
-		current_checkpoint = 13
-		print("Updating checkpoint to 13 since player was at position ", player_position)
+	if player_positions[current_player_index] >= 13 and player_checkpoints[current_player_index] < 13:
+		player_checkpoints[current_player_index] = 13
+		print("Updating checkpoint to 13 for Player ", current_player_index + 1, " since they were at position ", player_positions[current_player_index])
 	
 	# Respawn at checkpoint or start
-	print("Wood log hit! Current checkpoint is: ", current_checkpoint)
-	player_position = current_checkpoint
-	print("Wood log hit! Respawning at position ", player_position)
+	print("Wood log hit! Player ", current_player_index + 1, "'s checkpoint is: ", player_checkpoints[current_player_index])
+	player_positions[current_player_index] = player_checkpoints[current_player_index]
+	print("Wood log hit! Player ", current_player_index + 1, " respawning at position ", player_positions[current_player_index])
 	
 	# Cancel any ongoing movement
-	if move_tween and move_tween.is_valid():
-		move_tween.kill()
+	var current_tween = player_tweens[current_player_index]
+	if current_tween and current_tween.is_valid():
+		current_tween.kill()
 		is_moving = false
 	
 	# Update player visual position
@@ -336,19 +392,23 @@ func handle_wood_log_collision():
 
 # Add process function to handle continuous updates
 func _process(delta):
-	# Check for wood log collisions with player
+	# Check for wood log collisions with all players
 	var wood_log_node = get_node_or_null("/root/GameBoard/WoodLog")
-	if wood_log_node and player_rect:
+	if wood_log_node and player_rects.size() > 0:
 		# Update UI or game state based on wood log movement
 		if wood_log_node.is_moving:
 			# Disable dice button or show visual indicator that dice can't be rolled
 			# This would be implemented by connecting to UI elements
 			
+			# Check collision for the current player
+			var current_player = player_rects[current_player_index]
+			var current_pos = player_positions[current_player_index]
+			
 			# Simple collision detection - if wood log is moving and player is in unsafe position
-			if not is_safe_position(player_position):
+			if not is_safe_position(current_pos):
 				# Check if wood log is near player's vertical position
 				var log_pos = wood_log_node.global_position
-				var player_pos = player_rect.global_position
+				var player_pos = current_player.global_position
 				
 				# Simple vertical collision check (adjust values as needed)
 				if abs(log_pos.y - player_pos.y) < 100:
@@ -365,19 +425,23 @@ func move_player(player_node, steps):
 	# Reset player movement completion flag at the start of movement
 	player_move_completed = false
 	
-	var new_position = player_position + steps
+	var new_position = player_positions[current_player_index] + steps
 	
 	# Ensure position is within bounds
 	if new_position > 26:  # 26 is the end position
 		new_position = 26
+		
+		# Check if player reached the end
+		if new_position == 26:
+			print("Player ", current_player_index + 1, " reached the end!")
 	
 	# Check if player passed the checkpoint (position 13) during this move
-	if player_position <= 13 and new_position > 13:
-		current_checkpoint = 13
-		print("Passed checkpoint! New respawn point set to position 13")
+	if player_positions[current_player_index] <= 13 and new_position > 13:
+		player_checkpoints[current_player_index] = 13
+		print("Player ", current_player_index + 1, " passed checkpoint! New respawn point set to position 13")
 	
-	player_position = new_position
-	print("Player moved to position ", player_position)
+	player_positions[current_player_index] = new_position
+	print("Player ", current_player_index + 1, " moved to position ", new_position)
 	
 	# Move player visually to the new position
 	update_player_visual_position()
@@ -389,19 +453,19 @@ func move_player(player_node, steps):
 	var is_dice_stone = false
 	if new_position in stone_positions and stone_positions[new_position].type == "dice":
 		is_dice_stone = true
-		print("Player landed on a dice stone")
+		print("Player ", current_player_index + 1, " landed on a dice stone")
 	
 	# Handle stone effect at new position
 	var after_effect_position = await process_stone_effect(new_position)
 	if after_effect_position != new_position:
-		player_position = after_effect_position
+		player_positions[current_player_index] = after_effect_position
 		update_player_visual_position()
 		# Wait for any additional movement to complete
 		await get_tree().create_timer(0.6).timeout
 	
 	# Signal that player movement is complete
 	player_move_completed = true
-	print("Player movement completed")
+	print("Player ", current_player_index + 1, " movement completed")
 	
 	# If a brown face was rolled and player did NOT land on a dice stone,
 	# now it's safe to move the log
@@ -415,3 +479,16 @@ func move_player(player_node, steps):
 		move_log()
 		# Wait for any additional movement to complete
 		await get_tree().create_timer(0.6).timeout
+	
+	# If player didn't land on a dice stone, move to the next player's turn
+	if not is_dice_stone:
+		# Move to the next player's turn
+		current_player_index = (current_player_index + 1) % 4
+		print("Now it's Player ", current_player_index + 1, "'s turn")
+		
+		# Update the player turn label
+		player_turn_label.text = "Player " + str(current_player_index + 1) + "'s Turn"
+		player_turn_label.add_theme_color_override("font_color", player_colors[current_player_index])
+		
+		# Update the visual position for the new current player
+		update_player_visual_position()
