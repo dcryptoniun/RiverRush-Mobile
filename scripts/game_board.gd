@@ -286,6 +286,29 @@ func update_player_visual_position():
 	player_turn_label.text = "Player " + str(current_player_index + 1) + "'s Turn"
 	player_turn_label.add_theme_color_override("font_color", player_colors[current_player_index])
 
+# Function to update a specific player's visual position without changing the current player's turn
+func update_player_position_by_index(player_idx):
+	if player_rects.size() == 0 or player_path_follows.size() == 0 or player_idx < 0 or player_idx >= player_rects.size():
+		return
+	
+	# Get the specified player's position
+	var position = player_positions[player_idx]
+	
+	# Calculate path offset for the position (0-1 range)
+	var target_offset = float(position - 1) / 25.0  # 26 positions, 0-25 index range
+	
+	# Get the PathFollow2D for this player
+	var path_follow = player_path_follows[player_idx]
+	
+	# Create a tween for this player's movement
+	var tween = create_tween()
+	tween.tween_property(path_follow, "progress_ratio", target_offset, 0.5)
+	
+	# Store the tween for this player
+	player_tweens[player_idx] = tween
+	
+	print("Player ", player_idx + 1, " respawned to position ", position, " (path offset: ", target_offset, ")")
+
 # Board configuration
 var stone_positions = {
 	1: {"type": "start", "safe": true},
@@ -363,7 +386,7 @@ func is_safe_position(position):
 		return stone_positions[position].get("safe", false)
 	return false
 
-# Function to handle wood log collision
+# Function to handle wood log collision for the current player
 func handle_wood_log_collision():
 	var current_pos = player_positions[current_player_index]
 	if is_safe_position(current_pos):
@@ -388,6 +411,31 @@ func handle_wood_log_collision():
 	
 	# Update player visual position
 	update_player_visual_position()
+
+# Function to handle wood log collision for a specific player without changing turn order
+func handle_wood_log_collision_for_player(player_idx):
+	var current_pos = player_positions[player_idx]
+	if is_safe_position(current_pos):
+		print("Player ", player_idx + 1, " is safe on position ", current_pos, "!")
+		return
+	
+	# Make sure checkpoint is updated if player is at or beyond position 13
+	if player_positions[player_idx] >= 13 and player_checkpoints[player_idx] < 13:
+		player_checkpoints[player_idx] = 13
+		print("Updating checkpoint to 13 for Player ", player_idx + 1, " since they were at position ", player_positions[player_idx])
+	
+	# Respawn at checkpoint or start
+	print("Wood log hit! Player ", player_idx + 1, "'s checkpoint is: ", player_checkpoints[player_idx])
+	player_positions[player_idx] = player_checkpoints[player_idx]
+	print("Wood log hit! Player ", player_idx + 1, " respawning at position ", player_positions[player_idx])
+	
+	# Cancel any ongoing movement for this player
+	var player_tween = player_tweens[player_idx]
+	if player_tween and player_tween.is_valid():
+		player_tween.kill()
+	
+	# Update this player's visual position without changing the current player's turn
+	update_player_position_by_index(player_idx)
 
 # Add process function to handle continuous updates
 func _process(delta):
@@ -414,15 +462,9 @@ func _process(delta):
 					
 					# Simple vertical collision check (adjust values as needed)
 					if abs(log_pos.y - player_global_pos.y) < 100:
-						# Temporarily set current_player_index to this player's index
-						var saved_player_index = current_player_index
-						current_player_index = i
-						
-						# Handle collision for this player
-						handle_wood_log_collision()
-						
-						# Restore the original current player index
-						current_player_index = saved_player_index
+						# Handle collision for this player without changing the current_player_index
+						# This ensures the turn order is preserved
+						handle_wood_log_collision_for_player(i)
 
 # Function to handle player movement on the board
 func move_player(player_node, steps):
