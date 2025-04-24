@@ -93,6 +93,11 @@ func _ready():
 	# Get reference to Path2D for player movement
 	path_2d = $Path2D
 	
+	# Connect to wood log movement complete signal
+	var wood_log_node = get_node_or_null("WoodLog")
+	if wood_log_node and not wood_log_node.is_connected("movement_complete", _on_wood_log_movement_complete):
+		wood_log_node.movement_complete.connect(_on_wood_log_movement_complete)
+	
 	# Setup pause menu
 	var pause_menu_scene = load("res://scenes/pause_menu.tscn")
 	if pause_menu_scene:
@@ -535,12 +540,47 @@ func _on_pause_button_pressed():
 func _on_ai_thinking_timer_timeout() -> void:
 	# AI automatically rolls the dice
 	roll_dice()
-	# The dice roll will trigger the movement in the _on_dice_button_pressed function
+	# The dice roll will trigger the movement in the roll_dice function
 	
 	# Re-enable the dice button after AI's turn
-	var dice_button = %RollButton
+	var dice_button = get_node_or_null("%RollButton")
 	if dice_button:
 		dice_button.disabled = false
+
+# Handle wood log movement completion
+func _on_wood_log_movement_complete() -> void:
+	print("Wood log movement complete signal received")
+	
+	# If we're waiting for player movement to complete, don't advance turn yet
+	if not player_move_completed:
+		print("Waiting for player movement to complete before advancing turn")
+		return
+	
+	# Advance to the next player's turn
+	current_player_index = (current_player_index + 1) % player_count
+	print("Now it's Player ", current_player_index + 1, "'s turn")
+	
+	# Update the player turn label
+	player_turn_label.text = "Player " + str(current_player_index + 1) + "'s Turn"
+	player_turn_label.add_theme_color_override("font_color", player_colors[current_player_index])
+	
+	# Check if it's AI player's turn (player 2 is index 1)
+	if ai_enabled and current_player_index == 1:
+		print("AI player is thinking...")
+		# Add a small delay before AI makes its move to simulate "thinking"
+		ai_thinking_timer.start()
+		# Disable dice button while AI is thinking
+		var dice_button = get_node_or_null("%RollButton")
+		if dice_button:
+			dice_button.disabled = true
+	# Make sure human players can interact with the dice button
+	else:
+		var dice_button = get_node_or_null("%RollButton")
+		if dice_button:
+			dice_button.disabled = false
+			
+	# Update the visual position for the new current player
+	update_player_visual_position()
 
 # Function to handle player movement on the board
 func move_player(player_node, steps):
@@ -603,13 +643,17 @@ func move_player(player_node, steps):
 	if current_dice_value >= 4 and current_dice_value <= 6 and not is_dice_stone:
 		print("Brown face rolled! Moving log now that player movement is complete...")
 		move_log()
+		# Don't advance to next player yet - wait for log movement to complete
+		# The _on_wood_log_movement_complete signal handler will handle turn advancement
+		return
 	# If there's a pending log movement from a previous brown face roll that landed on a dice stone
 	elif pending_log_movement and not is_dice_stone:
 		print("Executing pending log movement after all dice rolls are complete...")
 		pending_log_movement = false
 		move_log()
-		# Wait for any additional movement to complete
-		await get_tree().create_timer(0.6).timeout
+		# Don't advance to next player yet - wait for log movement to complete
+		# The _on_wood_log_movement_complete signal handler will handle turn advancement
+		return
 	
 	# If player didn't land on a dice stone, move to the next player's turn
 	if not is_dice_stone:
@@ -627,9 +671,14 @@ func move_player(player_node, steps):
 			# Add a small delay before AI makes its move to simulate "thinking"
 			ai_thinking_timer.start()
 			# Disable dice button while AI is thinking
-			var dice_button = %RollButton
+			var dice_button = get_node_or_null("%RollButton")
 			if dice_button:
 				dice_button.disabled = true
+		# Make sure human players can interact with the dice button
+		else:
+			var dice_button = get_node_or_null("%RollButton")
+			if dice_button:
+				dice_button.disabled = false
 		
 		# Update the visual position for the new current player
 		update_player_visual_position()

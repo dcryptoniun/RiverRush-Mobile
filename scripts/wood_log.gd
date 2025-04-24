@@ -1,5 +1,8 @@
 extends Node2D
 
+# Signal for when log movement completes
+signal movement_complete
+
 # Variables for wood log movement
 var is_moving = false
 var speed = 800  # Speed of log movement in pixels per second
@@ -61,10 +64,10 @@ func _process(delta):
 			
 			# Signal that the log movement is complete
 			# This allows the game to know when to check for collisions
-			movement_complete()
+			movement_completed()
 
 # Function to handle movement completion
-func movement_complete():
+func movement_completed():
 	# This function can be connected to by the game board
 	# to handle any post-movement logic
 	print("Log movement complete")
@@ -73,3 +76,6 @@ func movement_complete():
 	await get_tree().create_timer(0.5).timeout
 	# Ready for next movement
 	position = Vector2(-132, -132)
+	
+	# Emit signal that movement is complete
+	movement_complete.emit()
