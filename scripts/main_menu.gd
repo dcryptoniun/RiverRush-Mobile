@@ -1,23 +1,19 @@
 extends Control
 
-# Reference to the player count option button
-@onready var player_count_option = $CanvasLayer/MarginContainer/VBoxContainer/OptionButton
+# We no longer need the option button reference since we're using separate buttons
+# for each player count
 
 func _ready() -> void:
-	# Set default selection to 2 players (index 0)
-	player_count_option.select(0)
+	# No need to set default selection anymore
+	pass
 
-
-func _on_start_button_pressed() -> void:
+# Helper function to start the game with a specific player count
+func start_game_with_player_count(player_count: int) -> void:
 	await RenderingServer.frame_post_draw
-	
-	# Get the selected player count (2, 3, or 4)
-	var selected_index = player_count_option.selected
-	var player_count = selected_index + 2  # Convert index to actual player count
 	
 	# Create the game scene and set the player count parameter
 	var game_scene = load("res://scenes/game_board.tscn").instantiate()
-	# Set player_count directly as a property instead of using meta
+	# Set player_count directly as a property
 	game_scene.player_count = player_count
 	
 	# Get the current scene to remove it later
@@ -32,3 +28,23 @@ func _on_start_button_pressed() -> void:
 	# Remove the old scene
 	get_tree().root.remove_child(current_scene)
 	current_scene.queue_free()
+	
+	print("Starting game with ", player_count, " players")
+
+
+# Start game with 2 players
+func _on_start_button_2_pressed() -> void:
+	start_game_with_player_count(2)
+
+# Start game with 3 players
+func _on_start_button_3_pressed() -> void:
+	start_game_with_player_count(3)
+
+# Start game with 4 players
+func _on_start_button_4_pressed() -> void:
+	start_game_with_player_count(4)
+
+# Legacy function for backward compatibility if needed
+func _on_start_button_pressed() -> void:
+	# Default to 2 players if the old start button is still in the scene
+	start_game_with_player_count(2)

@@ -54,12 +54,33 @@ popup/item_1/id = 1
 popup/item_2/text = "4player"
 popup/item_2/id = 2
 
-[node name="StartButton" type="Button" parent="CanvasLayer/MarginContainer/VBoxContainer"]
+[node name="StartButton1" type="Button" parent="CanvasLayer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 8
 theme_override_font_sizes/font_size = 64
-text = "Start"
+text = "Play with AI"
+
+[node name="StartButton2" type="Button" parent="CanvasLayer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+theme_override_font_sizes/font_size = 64
+text = "2 Player"
+
+[node name="StartButton3" type="Button" parent="CanvasLayer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+theme_override_font_sizes/font_size = 64
+text = "3 Player"
+
+[node name="StartButton4" type="Button" parent="CanvasLayer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+theme_override_font_sizes/font_size = 64
+text = "4 Player"
 
 [node name="RiverRushLabel" type="Label" parent="CanvasLayer/MarginContainer"]
 layout_mode = 2
@@ -67,4 +88,7 @@ theme_override_font_sizes/font_size = 64
 text = "River Rush"
 horizontal_alignment = 1
 
-[connection signal="pressed" from="CanvasLayer/MarginContainer/VBoxContainer/StartButton" to="." method="_on_start_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/MarginContainer/VBoxContainer/StartButton1" to="." method="_on_start_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/MarginContainer/VBoxContainer/StartButton2" to="." method="_on_start_button_2_pressed"]
+[connection signal="pressed" from="CanvasLayer/MarginContainer/VBoxContainer/StartButton3" to="." method="_on_start_button_3_pressed"]
+[connection signal="pressed" from="CanvasLayer/MarginContainer/VBoxContainer/StartButton4" to="." method="_on_start_button_4_pressed"]
