@@ -26,6 +26,7 @@ var player_colors = [
 var player_count = 2  # Default player count if not specified
 var player_rects = []  # Array to store all player rectangles
 var player_positions = []  # Array to store positions of all players
+var player_previous_positions = []  # Array to store previous positions of all players
 var player_checkpoints = []  # Array to store checkpoints of all players
 var player_path_follows = []  # Array to store PathFollow2D nodes for each player
 var player_tweens = []  # Array to store tweens for each player
@@ -270,8 +271,9 @@ func create_player():
 		player_path_follows.append(path_follow)
 		player_tweens.append(null)  # Initialize tween array with null values
 		
-		# Initialize player position and checkpoint
+		# Initialize player position, previous position and checkpoint
 		player_positions.append(1)  # All players start at position 1
+		player_previous_positions.append(1)  # All players start with previous position at position 1
 		player_checkpoints.append(1)  # All players start with checkpoint at position 1
 	
 	# Update the visual position of the current player
@@ -375,6 +377,10 @@ func process_stone_effect(position):
 			var jump_to = stone.jump_to
 			print("Player ", current_player_index + 1, " landed on a frog stone! Jumping to position ", jump_to)
 			return jump_to
+		"switch":
+			var previous_pos = player_previous_positions[current_player_index]
+			print("Player ", current_player_index + 1, " landed on a switch stone! Going back to position ", previous_pos)
+			return previous_pos
 		"dice":
 			print("Player ", current_player_index + 1, " landed on a dice stone! Rolling again...")
 			# Add a small delay before rolling again
@@ -511,6 +517,9 @@ func move_player(player_node, steps):
 	
 	# Reset player movement completion flag at the start of movement
 	player_move_completed = false
+	
+	# Store the current position as previous position before moving
+	player_previous_positions[current_player_index] = player_positions[current_player_index]
 	
 	var new_position = player_positions[current_player_index] + steps
 	
