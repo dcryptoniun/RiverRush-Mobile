@@ -161,8 +161,16 @@ func roll_dice():
 		timer.queue_free()
 		stop_timer.queue_free()
 		
-		# Generate final random value (1-6 representing 1,2,3,1_b,2_b,3_b)
-		current_dice_value = randi() % 6 + 1
+		# Generate final random value with weighted probability
+		# Regular faces (1-3) should have 60% probability
+		# Brown faces (4-6) should have 40% probability
+		var random_value = randf()
+		if random_value < 0.6:
+			# 60% chance for regular faces (1-3)
+			current_dice_value = randi() % 3 + 1
+		else:
+			# 40% chance for brown faces (4-6)
+			current_dice_value = randi() % 3 + 4
 		
 		# Update dice display with final value
 		if dice_display:
