@@ -17,7 +17,8 @@ func _on_start_button_pressed() -> void:
 	
 	# Create the game scene and set the player count parameter
 	var game_scene = load("res://scenes/game_board.tscn").instantiate()
-	game_scene.set_meta("player_count", player_count)
+	# Set player_count directly as a property instead of using meta
+	game_scene.player_count = player_count
 	
 	# Get the current scene to remove it later
 	var current_scene = get_tree().current_scene

@@ -41,7 +41,10 @@ func _ready():
 	print("Game board initialized")
 	
 	# Get player count from scene parameters if available
-	if get_tree().get_current_scene().get_meta("player_count") != null:
+	if has_meta("player_count"):
+		player_count = get_meta("player_count")
+		print("Player count set to: ", player_count)
+	elif get_tree().get_current_scene() != self and get_tree().get_current_scene().has_meta("player_count"):
 		player_count = get_tree().get_current_scene().get_meta("player_count")
 		print("Player count set to: ", player_count)
 	
