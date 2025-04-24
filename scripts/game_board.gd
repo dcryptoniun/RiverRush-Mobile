@@ -35,6 +35,7 @@ var player_turn_label = null  # Label to display current player's turn
 var stone_node_positions = {}  # Will store actual positions of stones in the scene
 var path_2d = null  # Reference to Path2D for player movement
 var is_moving = false  # Flag to track if player is currently moving
+var pause_menu = null  # Reference to the pause menu
 
 func _ready():
 	# Initialize the game board
@@ -74,6 +75,21 @@ func _ready():
 	
 	# Get reference to Path2D for player movement
 	path_2d = $Path2D
+	
+	# Setup pause menu
+	var pause_menu_scene = load("res://scenes/pause_menu.tscn")
+	if pause_menu_scene:
+		pause_menu = pause_menu_scene.instantiate()
+		if pause_menu:
+			pause_menu.process_mode = Node.PROCESS_MODE_ALWAYS
+			add_child(pause_menu)
+			pause_menu.visible = false
+		else:
+			print("Error: Failed to instantiate pause menu scene")
+	else:
+		print("Error: Failed to load pause menu scene")
+	
+	# Connect pause button signal
 	
 	# Store positions of all stones for player movement
 	store_stone_positions()
@@ -474,6 +490,16 @@ func _process(delta):
 						# Handle collision for this player without changing the current_player_index
 						# This ensures the turn order is preserved
 						handle_wood_log_collision_for_player(i)
+
+# Add pause button functionality
+func _on_pause_button_pressed():
+	if pause_menu:
+		pause_menu.visible = true
+		get_tree().paused = true
+	else:
+		print("Warning: Pause menu not available")
+		# Still pause the game even if menu isn't available
+		get_tree().paused = true
 
 # Function to handle player movement on the board
 func move_player(player_node, steps):
