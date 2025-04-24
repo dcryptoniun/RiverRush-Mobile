@@ -33,6 +33,10 @@ var player_tweens = []  # Array to store tweens for each player
 var current_player_index = 0  # Index of the current player
 var player_turn_label = null  # Label to display current player's turn
 
+# AI player variables
+var ai_enabled = false  # Flag to indicate if AI is enabled for player 2
+var ai_thinking_timer = null  # Timer for AI "thinking" delay
+
 var stone_node_positions = {}  # Will store actual positions of stones in the scene
 var path_2d = null  # Reference to Path2D for player movement
 var is_moving = false  # Flag to track if player is currently moving
@@ -49,6 +53,18 @@ func _ready():
 	elif get_tree().get_current_scene() != self and get_tree().get_current_scene().has_meta("player_count"):
 		player_count = get_tree().get_current_scene().get_meta("player_count")
 		print("Player count set to: ", player_count)
+	
+	# Initialize AI mode if enabled
+	if has_meta("ai_enabled"):
+		ai_enabled = get_meta("ai_enabled")
+		print("AI mode enabled: ", ai_enabled)
+	
+	# Create AI thinking timer
+	ai_thinking_timer = Timer.new()
+	ai_thinking_timer.one_shot = true
+	ai_thinking_timer.wait_time = 1.5  # AI will "think" for 1.5 seconds before moving
+	ai_thinking_timer.connect("timeout", _on_ai_thinking_timer_timeout)
+	add_child(ai_thinking_timer)
 	
 	# The board is already set up to stay centered using CanvasLayer and CenterContainer
 	# This ensures it maintains its position regardless of screen resolution
@@ -515,6 +531,17 @@ func _on_pause_button_pressed():
 		# Still pause the game even if menu isn't available
 		get_tree().paused = true
 
+# AI thinking timer timeout - roll dice and move automatically
+func _on_ai_thinking_timer_timeout() -> void:
+	# AI automatically rolls the dice
+	roll_dice()
+	# The dice roll will trigger the movement in the _on_dice_button_pressed function
+	
+	# Re-enable the dice button after AI's turn
+	var dice_button = %RollButton
+	if dice_button:
+		dice_button.disabled = false
+
 # Function to handle player movement on the board
 func move_player(player_node, steps):
 	# If player is already moving or wood log is moving, don't allow another move
@@ -593,6 +620,16 @@ func move_player(player_node, steps):
 		# Update the player turn label
 		player_turn_label.text = "Player " + str(current_player_index + 1) + "'s Turn"
 		player_turn_label.add_theme_color_override("font_color", player_colors[current_player_index])
+		
+		# Check if it's AI player's turn (player 2 is index 1)
+		if ai_enabled and current_player_index == 1:
+			print("AI player is thinking...")
+			# Add a small delay before AI makes its move to simulate "thinking"
+			ai_thinking_timer.start()
+			# Disable dice button while AI is thinking
+			var dice_button = %RollButton
+			if dice_button:
+				dice_button.disabled = true
 		
 		# Update the visual position for the new current player
 		update_player_visual_position()
