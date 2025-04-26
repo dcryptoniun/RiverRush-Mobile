@@ -169,10 +169,10 @@ func move_log():
 
 # Function to roll the dice
 func roll_dice():
-	# Check if dice is already rolling, if wood log is moving, or if game is over
+	# Check if dice is already rolling, if wood log is moving, if game is over, or if AI is thinking
 	var wood_log_node = get_node_or_null("/root/GameBoard/WoodLog")
-	if is_rolling or (wood_log_node and wood_log_node.is_moving) or game_over:
-		print("Cannot roll dice while log is moving, dice is already rolling, or game is over")
+	if is_rolling or (wood_log_node and wood_log_node.is_moving) or game_over or (ai_enabled and current_player_index == 1 and ai_thinking_timer.time_left > 0):
+		print("Cannot roll dice while log is moving, dice is already rolling, game is over, or AI is thinking")
 		return
 		
 	# Disable the roll button while animations are in progress
@@ -782,14 +782,44 @@ func move_player(player_node, steps):
 	if dice_button:
 		dice_button.disabled = true
 	
+	# Check if the move is valid (player can move the full number of steps)
+	var current_pos = player_positions[current_player_index]
+	var new_position = current_pos + steps
+	
+	# If new position exceeds the end (26), check if it's a valid move
+	if new_position > 26:
+		# If the player can't land exactly on the end position, skip their turn
+		if current_pos + steps > 26:
+			print("Player ", current_player_index + 1, " can't move ", steps, " steps from position ", current_pos, " - invalid move")
+			# Complete player movement immediately
+			player_move_completed = true
+			
+			# Re-enable the roll button
+			if dice_button and not (ai_enabled and current_player_index == 1):
+				dice_button.disabled = false
+			
+			# Advance to next player's turn
+			current_player_index = (current_player_index + 1) % player_count
+			print("Turn skipped. Now it's Player ", current_player_index + 1, "'s turn")
+			
+			# Check if it's AI player's turn
+			if ai_enabled and current_player_index == 1:
+				print("AI player is thinking...")
+				# Add a small delay before AI makes its move
+				ai_thinking_timer.start()
+				# Disable dice button while AI is thinking
+				if dice_button:
+					dice_button.disabled = true
+			
+			# Update the visual position for the new current player
+			update_player_visual_position()
+			return
+		
+		# If it's a valid move to the end, set new_position to exactly 26
+		new_position = 26
+	
 	# Store the current position as previous position before moving
 	player_previous_positions[current_player_index] = player_positions[current_player_index]
-	
-	var new_position = player_positions[current_player_index] + steps
-	
-	# Ensure position is within bounds
-	if new_position > 26:  # 26 is the end position
-		new_position = 26
 	
 	# Check if player passed the checkpoint (position 13) during this move
 	if player_positions[current_player_index] <= 13 and new_position > 13:
