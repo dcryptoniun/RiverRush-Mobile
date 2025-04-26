@@ -16,7 +16,7 @@
 
 [sub_resource type="Curve2D" id="Curve2D_cwqdw"]
 _data = {
-"points": PackedVector2Array(0, 0, 0, 0, 632, 1221, 0, 0, 0, 0, 543, 1122, 0, 0, 0, 0, 440, 1162, 0, 0, 0, 0, 319, 1176, 0, 0, 0, 0, 182, 1180, 0, 0, 0, 0, 98, 1078, 0, 0, 0, 0, 166, 980, 0, 0, 0, 0, 281, 968, 0, 0, 0, 0, 406, 944, 0, 0, 0, 0, 537, 923, 0, 0, 0, 0, 638, 843, 0, 0, 0, 0, 602, 735, 0, 0, 0, 0, 478, 719, 0, 0, 0, 0, 350, 735, 0, 0, 0, 0, 213, 745, 0, 0, 0, 0, 81, 719, 0, 0, 0, 0, 103, 595, 0, 0, 0, 0, 226, 546, 0, 0, 0, 0, 336, 529, 0, 0, 0, 0, 452, 521, 0, 0, 0, 0, 605, 483, 0, 0, 0, 0, 588, 361, 0, 0, 0, 0, 465, 333, 0, 0, 0, 0, 318, 340, 0, 0, 0, 0, 201, 317, 0, 0, 0, 0, 77, 203)
+"points": PackedVector2Array(0, 0, 0, 0, 639, 1210, 0, 0, 0, 0, 543, 1122, 0, 0, 0, 0, 431, 1163, 0, 0, 0, 0, 315, 1176, 0, 0, 0, 0, 172, 1181, 0, 0, 0, 0, 88, 1073, 0, 0, 0, 0, 159, 978, 0, 0, 0, 0, 276, 970, 0, 0, 0, 0, 402, 943, 0, 0, 0, 0, 529, 925, 0, 0, 0, 0, 638, 843, 0, 0, 0, 0, 602, 735, 0, 0, 0, 0, 478, 719, 0, 0, 0, 0, 350, 735, 0, 0, 0, 0, 213, 745, 0, 0, 0, 0, 81, 719, 0, 0, 0, 0, 103, 595, 0, 0, 0, 0, 226, 546, 0, 0, 0, 0, 336, 529, 0, 0, 0, 0, 452, 521, 0, 0, 0, 0, 605, 483, 0, 0, 0, 0, 588, 361, 0, 0, 0, 0, 465, 333, 0, 0, 0, 0, 318, 340, 0, 0, 0, 0, 201, 317, 0, 0, 0, 0, 77, 203)
 }
 point_count = 26
 
@@ -306,10 +306,11 @@ position = Vector2(-132, -132)
 scale = Vector2(0.4, 0.4)
 
 [node name="RedPath2D" type="Path2D" parent="."]
+position = Vector2(-21, 0)
 curve = SubResource("Curve2D_cwqdw")
 
 [node name="PathFollow2D" type="PathFollow2D" parent="RedPath2D"]
-position = Vector2(632, 1221)
+position = Vector2(639, 1210)
 rotates = false
 
 [node name="Sprite2D" type="Sprite2D" parent="RedPath2D/PathFollow2D"]
@@ -317,10 +318,11 @@ scale = Vector2(0.15, 0.15)
 texture = ExtResource("10_sax53")
 
 [node name="GreenPath2D" type="Path2D" parent="."]
+position = Vector2(-7, 0)
 curve = SubResource("Curve2D_cwqdw")
 
 [node name="PathFollow2D" type="PathFollow2D" parent="GreenPath2D"]
-position = Vector2(632, 1221)
+position = Vector2(639, 1210)
 rotates = false
 
 [node name="Sprite2D" type="Sprite2D" parent="GreenPath2D/PathFollow2D"]
@@ -328,10 +330,11 @@ scale = Vector2(0.15, 0.15)
 texture = ExtResource("11_axant")
 
 [node name="BluePath2D" type="Path2D" parent="."]
+position = Vector2(7, 0)
 curve = SubResource("Curve2D_cwqdw")
 
 [node name="PathFollow2D" type="PathFollow2D" parent="BluePath2D"]
-position = Vector2(632, 1221)
+position = Vector2(639, 1210)
 rotates = false
 
 [node name="Sprite2D" type="Sprite2D" parent="BluePath2D/PathFollow2D"]
@@ -339,10 +342,11 @@ scale = Vector2(0.15, 0.15)
 texture = ExtResource("12_cac7a")
 
 [node name="YellowPath2D" type="Path2D" parent="."]
+position = Vector2(25, 0)
 curve = SubResource("Curve2D_cwqdw")
 
 [node name="PathFollow2D" type="PathFollow2D" parent="YellowPath2D"]
-position = Vector2(632, 1221)
+position = Vector2(639, 1210)
 rotates = false
 
 [node name="Sprite2D" type="Sprite2D" parent="YellowPath2D/PathFollow2D"]
