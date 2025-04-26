@@ -19,8 +19,8 @@ var player_move_completed = true  # Flag to track if player movement is complete
 # Variables for multiple players
 var player_colors = [
 	Color(0.9, 0.1, 0.1, 0.8),  # Red (Player 1)
-	Color(0.1, 0.1, 0.9, 0.8),  # Blue (Player 2)
-	Color(0.1, 0.9, 0.1, 0.8),  # Green (Player 3)
+	Color(0.1, 0.9, 0.1, 0.8),  # Green (Player 2)
+	Color(0.1, 0.1, 0.9, 0.8),  # Blue (Player 3)
 	Color(0.9, 0.9, 0.1, 0.8)   # Yellow (Player 4)
 ]
 var player_count = 2  # Default player count if not specified
@@ -32,6 +32,7 @@ var player_path_follows = []  # Array to store PathFollow2D nodes for each playe
 var player_tweens = []  # Array to store tweens for each player
 var current_player_index = 0  # Index of the current player
 var player_turn_label = null  # Label to display current player's turn
+var dice_bg = null  # Reference to the dice background ColorRect
 var player_textures = []  # Array to store player textures
 
 # AI player variables
@@ -276,12 +277,17 @@ func create_player():
 	# Load player textures
 	_load_player_textures()
 	
-	# Get reference to the player turn label in the scene
+	# Get reference to the player turn label and dice background in the scene
 	player_turn_label = %PlayerTurnLabel
+	dice_bg = get_node_or_null("MarginContainer/DiceContainer/DiceBG")
 	
 	# Set initial text and color for player 1
 	player_turn_label.text = "Player 1's Turn"
 	player_turn_label.add_theme_color_override("font_color", player_colors[0])
+	
+	# Set initial dice background color for player 1
+	if dice_bg:
+		dice_bg.color = player_colors[0]
 	
 	# Initialize arrays
 	player_sprites = []
@@ -374,9 +380,13 @@ func update_player_visual_position():
 	
 	print("Player ", current_player_index + 1, " moving to position ", position, " (path offset: ", target_offset, ")")
 	
-	# Update the player turn label
+	# Update the player turn label and dice background
 	player_turn_label.text = "Player " + str(current_player_index + 1) + "'s Turn"
 	player_turn_label.add_theme_color_override("font_color", player_colors[current_player_index])
+	
+	# Update dice background color
+	if dice_bg:
+		dice_bg.color = player_colors[current_player_index]
 
 # Function to update a specific player's visual position without changing the current player's turn
 func update_player_position_by_index(player_idx):
@@ -596,9 +606,13 @@ func _on_wood_log_movement_complete() -> void:
 	current_player_index = (current_player_index + 1) % player_count
 	print("Now it's Player ", current_player_index + 1, "'s turn")
 	
-	# Update the player turn label
+	# Update the player turn label and dice background
 	player_turn_label.text = "Player " + str(current_player_index + 1) + "'s Turn"
 	player_turn_label.add_theme_color_override("font_color", player_colors[current_player_index])
+	
+	# Update dice background color
+	if dice_bg:
+		dice_bg.color = player_colors[current_player_index]
 	
 	# Check if it's AI player's turn (player 2 is index 1)
 	if ai_enabled and current_player_index == 1:
@@ -697,9 +711,13 @@ func move_player(player_node, steps):
 		current_player_index = (current_player_index + 1) % player_count
 		print("Now it's Player ", current_player_index + 1, "'s turn")
 		
-		# Update the player turn label
+		# Update the player turn label and dice background
 		player_turn_label.text = "Player " + str(current_player_index + 1) + "'s Turn"
 		player_turn_label.add_theme_color_override("font_color", player_colors[current_player_index])
+		
+		# Update dice background color
+		if dice_bg:
+			dice_bg.color = player_colors[current_player_index]
 		
 		# Check if it's AI player's turn (player 2 is index 1)
 		if ai_enabled and current_player_index == 1:

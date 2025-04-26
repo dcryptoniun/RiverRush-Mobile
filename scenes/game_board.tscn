@@ -258,7 +258,8 @@ texture = ExtResource("2_iqvqw")
 layout_mode = 2
 size_flags_vertical = 8
 
-[node name="ColorRect" type="ColorRect" parent="MarginContainer/DiceContainer"]
+[node name="DiceBG" type="ColorRect" parent="MarginContainer/DiceContainer"]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(20, 100)
 layout_mode = 2
 offset_top = -104.0
