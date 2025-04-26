@@ -157,6 +157,11 @@ func roll_dice():
 		print("Cannot roll dice while log is moving or dice is already rolling")
 		return
 		
+	# Disable the roll button while animations are in progress
+	var dice_button = get_node_or_null("%RollButton")
+	if dice_button:
+		dice_button.disabled = true
+		
 	is_rolling = true
 	player_move_completed = false  # Reset player movement flag
 	
@@ -211,6 +216,7 @@ func roll_dice():
 		move_player(player_sprites[current_player_index], steps)
 		
 		# Note: Wood log movement is now handled in move_player after player movement completes
+		# Button will be re-enabled after all animations complete in _on_wood_log_movement_complete
 	)
 	stop_timer.start()
 
@@ -646,6 +652,11 @@ func _on_wood_log_movement_complete() -> void:
 	if not player_move_completed:
 		print("Waiting for player movement to complete before advancing turn")
 		return
+		
+	# Re-enable the roll button now that all animations are complete
+	var dice_button = get_node_or_null("%RollButton")
+	if dice_button and not (ai_enabled and current_player_index == 1):
+		dice_button.disabled = false
 	
 	# Advance to the next player's turn
 	current_player_index = (current_player_index + 1) % player_count
@@ -662,12 +673,12 @@ func _on_wood_log_movement_complete() -> void:
 		# Add a small delay before AI makes its move to simulate "thinking"
 		ai_thinking_timer.start()
 		# Disable dice button while AI is thinking
-		var dice_button = get_node_or_null("%RollButton")
+		dice_button = get_node_or_null("%RollButton")
 		if dice_button:
 			dice_button.disabled = true
 	# Make sure human players can interact with the dice button
 	else:
-		var dice_button = get_node_or_null("%RollButton")
+		dice_button = get_node_or_null("%RollButton")
 		if dice_button:
 			dice_button.disabled = false
 			
@@ -684,6 +695,11 @@ func move_player(player_node, steps):
 	
 	# Reset player movement completion flag at the start of movement
 	player_move_completed = false
+	
+	# Ensure the roll button remains disabled during player movement
+	var dice_button = get_node_or_null("%RollButton")
+	if dice_button:
+		dice_button.disabled = true
 	
 	# Store the current position as previous position before moving
 	player_previous_positions[current_player_index] = player_positions[current_player_index]
@@ -730,6 +746,9 @@ func move_player(player_node, steps):
 	player_move_completed = true
 	print("Player ", current_player_index + 1, " movement completed")
 	
+	# Don't re-enable the roll button yet if we're going to move the log
+	# The button will be re-enabled in _on_wood_log_movement_complete
+	
 	# If a brown face was rolled and player did NOT land on a dice stone,
 	# now it's safe to move the log
 	if current_dice_value >= 4 and current_dice_value <= 6 and not is_dice_stone:
@@ -764,12 +783,12 @@ func move_player(player_node, steps):
 			# Add a small delay before AI makes its move to simulate "thinking"
 			ai_thinking_timer.start()
 			# Disable dice button while AI is thinking
-			var dice_button = get_node_or_null("%RollButton")
+			dice_button = get_node_or_null("%RollButton")
 			if dice_button:
 				dice_button.disabled = true
 		# Make sure human players can interact with the dice button
 		else:
-			var dice_button = get_node_or_null("%RollButton")
+			dice_button = get_node_or_null("%RollButton")
 			if dice_button:
 				dice_button.disabled = false
 		
