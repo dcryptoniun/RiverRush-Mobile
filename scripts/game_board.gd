@@ -35,6 +35,11 @@ var current_player_index = 0  # Index of the current player
 var dice_bg = null  # Reference to the dice background ColorRect
 var player_textures = []  # Array to store player textures
 
+# Game over variables
+var players_finished = []  # Array to track which players have reached the end (stores player indices)
+var game_over_menu = null  # Reference to the game over menu
+var game_over = false  # Flag to indicate if the game is over
+
 # AI player variables
 var ai_enabled = false  # Flag to indicate if AI is enabled for player 2
 var ai_thinking_timer = null  # Timer for AI "thinking" delay
@@ -66,6 +71,19 @@ func _ready():
 	ai_thinking_timer.wait_time = 1.5  # AI will "think" for 1.5 seconds before moving
 	ai_thinking_timer.connect("timeout", _on_ai_thinking_timer_timeout)
 	add_child(ai_thinking_timer)
+	
+	# Initialize game over menu
+	var game_over_scene = load("res://scenes/game_over.tscn")
+	if game_over_scene:
+		game_over_menu = game_over_scene.instantiate()
+		if game_over_menu:
+			game_over_menu.process_mode = Node.PROCESS_MODE_ALWAYS
+			add_child(game_over_menu)
+			game_over_menu.visible = false
+		else:
+			print("Error: Failed to instantiate game over menu scene")
+	else:
+		print("Error: Failed to load game over menu scene")
 	
 	# The board is already set up to stay centered using CanvasLayer and CenterContainer
 	# This ensures it maintains its position regardless of screen resolution
@@ -151,10 +169,10 @@ func move_log():
 
 # Function to roll the dice
 func roll_dice():
-	# Check if dice is already rolling or if wood log is moving
+	# Check if dice is already rolling, if wood log is moving, or if game is over
 	var wood_log_node = get_node_or_null("/root/GameBoard/WoodLog")
-	if is_rolling or (wood_log_node and wood_log_node.is_moving):
-		print("Cannot roll dice while log is moving or dice is already rolling")
+	if is_rolling or (wood_log_node and wood_log_node.is_moving) or game_over:
+		print("Cannot roll dice while log is moving, dice is already rolling, or game is over")
 		return
 		
 	# Disable the roll button while animations are in progress
@@ -534,6 +552,17 @@ func process_stone_effect(position):
 			player_checkpoints[current_player_index] = position
 			print("Player ", current_player_index + 1, " reached checkpoint! New respawn point set to position ", position)
 			return position
+		"end":
+			print("Player ", current_player_index + 1, " reached the end!")
+			# Check if this player has already finished
+			if not current_player_index in players_finished:
+				# Add player to finished list
+				players_finished.append(current_player_index)
+				print("Player ", current_player_index + 1, " finished the game! Total players finished: ", players_finished.size())
+				
+				# Check if game is over based on majority rule
+				check_game_over()
+			return position
 		_:
 			return position
 
@@ -644,6 +673,54 @@ func _on_ai_thinking_timer_timeout() -> void:
 	if dice_button:
 		dice_button.disabled = false
 
+# Function to check if the game is over based on majority rule
+func check_game_over():
+	# If game is already over, don't check again
+	if game_over:
+		return
+	
+	# Calculate how many players need to finish to end the game (majority rule)
+	var players_needed_to_finish = ceil(player_count / 2.0)
+	if player_count == 3:
+		players_needed_to_finish = 2  # 2/3 players for 3-player mode
+	elif player_count == 4:
+		players_needed_to_finish = 3  # 3/4 players for 4-player mode
+	
+	print("Players finished: ", players_finished.size(), "/", players_needed_to_finish, " needed to end game")
+	
+	# Check if enough players have finished
+	if players_finished.size() >= players_needed_to_finish:
+		game_over = true
+		print("Game over! Enough players have reached the end.")
+		
+		# Generate final rankings
+		var rankings = generate_rankings()
+		
+		# Show game over screen with rankings
+		if game_over_menu and game_over_menu.has_method("show_game_over"):
+			game_over_menu.show_game_over(rankings)
+		else:
+			print("Error: Game over menu not found or missing show_game_over method")
+
+# Function to generate player rankings
+func generate_rankings():
+	# Start with players who have finished (in order of finishing)
+	var rankings = players_finished.duplicate()
+	
+	# Add remaining players based on their current position (higher position = better ranking)
+	var remaining_players = []
+	for i in range(player_count):
+		if not i in rankings:
+			remaining_players.append(i)
+	
+	# Sort remaining players by position (descending)
+	remaining_players.sort_custom(func(a, b): return player_positions[a] > player_positions[b])
+	
+	# Add sorted remaining players to rankings
+	rankings.append_array(remaining_players)
+	
+	return rankings
+
 # Handle wood log movement completion
 func _on_wood_log_movement_complete() -> void:
 	print("Wood log movement complete signal received")
@@ -657,6 +734,10 @@ func _on_wood_log_movement_complete() -> void:
 	var dice_button = get_node_or_null("%RollButton")
 	if dice_button and not (ai_enabled and current_player_index == 1):
 		dice_button.disabled = false
+	
+	# If game is over, don't advance to next player
+	if game_over:
+		return
 	
 	# Advance to the next player's turn
 	current_player_index = (current_player_index + 1) % player_count
@@ -709,10 +790,6 @@ func move_player(player_node, steps):
 	# Ensure position is within bounds
 	if new_position > 26:  # 26 is the end position
 		new_position = 26
-		
-		# Check if player reached the end
-		if new_position == 26:
-			print("Player ", current_player_index + 1, " reached the end!")
 	
 	# Check if player passed the checkpoint (position 13) during this move
 	if player_positions[current_player_index] <= 13 and new_position > 13:
