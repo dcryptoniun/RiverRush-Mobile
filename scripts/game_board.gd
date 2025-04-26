@@ -24,7 +24,7 @@ var player_colors = [
 	Color(0.9, 0.9, 0.1, 0.8)   # Yellow (Player 4)
 ]
 var player_count = 2  # Default player count if not specified
-var player_rects = []  # Array to store all player rectangles
+var player_sprites = []  # Array to store all player sprite nodes
 var player_positions = []  # Array to store positions of all players
 var player_previous_positions = []  # Array to store previous positions of all players
 var player_checkpoints = []  # Array to store checkpoints of all players
@@ -32,13 +32,13 @@ var player_path_follows = []  # Array to store PathFollow2D nodes for each playe
 var player_tweens = []  # Array to store tweens for each player
 var current_player_index = 0  # Index of the current player
 var player_turn_label = null  # Label to display current player's turn
+var player_textures = []  # Array to store player textures
 
 # AI player variables
 var ai_enabled = false  # Flag to indicate if AI is enabled for player 2
 var ai_thinking_timer = null  # Timer for AI "thinking" delay
 
 var stone_node_positions = {}  # Will store actual positions of stones in the scene
-var path_2d = null  # Reference to Path2D for player movement
 var is_moving = false  # Flag to track if player is currently moving
 var pause_menu = null  # Reference to the pause menu
 
@@ -90,8 +90,7 @@ func _ready():
 	# Reference to the wood log scene - we don't instantiate it here anymore
 	# as it's already a separate scene that will be managed independently
 	
-	# Get reference to Path2D for player movement
-	path_2d = $Path2D
+	# Using individual Path2D nodes for each player now
 	
 	# Connect to wood log movement complete signal
 	var wood_log_node = get_node_or_null("WoodLog")
@@ -208,7 +207,7 @@ func roll_dice():
 			steps = steps - 3  # Convert 4,5,6 to 1,2,3 for brown faces
 		
 		# Move current player - wood log movement will be triggered after player movement completes
-		move_player(player_rects[current_player_index], steps)
+		move_player(player_sprites[current_player_index], steps)
 		
 		# Note: Wood log movement is now handled in move_player after player movement completes
 	)
@@ -262,8 +261,21 @@ func store_stone_positions():
 				stone_node_positions[pos_key] = stone_node.global_position + Vector2(stone_node.size.x/2, stone_node.size.y/2)
 				print("Stored position for ", stone_name, ": ", stone_node_positions[pos_key])
 
-# Function to create player placeholders
+# Function to load player textures
+func _load_player_textures():
+	# Load player textures from assets/players folder
+	player_textures = [
+		load("res://assets/players/red.png"),
+		load("res://assets/players/blue.png"),
+		load("res://assets/players/green.png"),
+		load("res://assets/players/yellow.png")
+	]
+
+# Function to initialize players from the scene
 func create_player():
+	# Load player textures
+	_load_player_textures()
+	
 	# Get reference to the player turn label in the scene
 	player_turn_label = %PlayerTurnLabel
 	
@@ -271,46 +283,70 @@ func create_player():
 	player_turn_label.text = "Player 1's Turn"
 	player_turn_label.add_theme_color_override("font_color", player_colors[0])
 	
-	# Create players based on player_count
-	for i in range(player_count):
-		# Create a PathFollow2D for this player
-		var path_follow = PathFollow2D.new()
-		path_2d.add_child(path_follow)
+	# Initialize arrays
+	player_sprites = []
+	player_path_follows = []
+	player_tweens = []
+	player_positions = []
+	player_previous_positions = []
+	player_checkpoints = []
+	
+	# Define the color names for each player path
+	var color_names = ["Red", "Green", "Blue", "Yellow"]
+	
+	# First, find and process all player nodes in the scene
+	for i in range(color_names.size()):
+		# Get the Path2D node for this player
+		var path_name = color_names[i] + "Path2D"
+		var path_node = get_node_or_null(path_name)
+		
+		if not path_node:
+			print("Error: Path2D node '" + path_name + "' not found in scene")
+			continue
+		
+		# Get the PathFollow2D node
+		var path_follow = path_node.get_node_or_null("PathFollow2D")
+		if not path_follow:
+			print("Error: PathFollow2D node not found under '" + path_name + "'")
+			continue
+		
+		# Get the Sprite2D node
+		var player_sprite = path_follow.get_node_or_null("Sprite2D")
+		if not player_sprite:
+			print("Error: Sprite2D node not found under PathFollow2D")
+			continue
+		
+		# Configure the PathFollow2D
 		path_follow.loop = false  # Don't loop around the path
-		path_follow.rotates = false  # Don't rotate the player along the path
 		path_follow.progress_ratio = 0.0  # Start at the beginning of the path
 		
-		# Create a ColorRect as player placeholder
-		var player = ColorRect.new()
-		player.color = player_colors[i]  # Set color based on player index
-		player.custom_minimum_size = Vector2(30, 30)  # Size of player
-		
-		# Add player to the PathFollow2D
-		path_follow.add_child(player)
-		
-		# Center the player on the path by setting its position to be exactly centered
-		# The position needs to be negative half of the player's size to center it on the path point
-		player.position = Vector2(-player.custom_minimum_size.x/2, -player.custom_minimum_size.y/2)
-		
-		# Offset each player slightly so they're all visible
-		player.position += Vector2(i * 10, i * 10)
-		
-		# Add player and PathFollow2D to our arrays
-		player_rects.append(player)
-		player_path_follows.append(path_follow)
-		player_tweens.append(null)  # Initialize tween array with null values
-		
-		# Initialize player position, previous position and checkpoint
-		player_positions.append(1)  # All players start at position 1
-		player_previous_positions.append(1)  # All players start with previous position at position 1
-		player_checkpoints.append(1)  # All players start with checkpoint at position 1
+		# Only add active players to our arrays based on player_count
+		if i < player_count:
+			# Make sure this player is visible
+			player_sprite.visible = true
+			
+			# Add player and PathFollow2D to our arrays
+			player_sprites.append(player_sprite)
+			player_path_follows.append(path_follow)
+			
+			# Initialize tween array with null values
+			player_tweens.append(null)
+			
+			# Initialize player position, previous position and checkpoint
+			player_positions.append(1)  # All players start at position 1
+			player_previous_positions.append(1)  # All players start with previous position at position 1
+			player_checkpoints.append(1)  # All players start with checkpoint at position 1
+		else:
+			# Hide players that exceed the player count
+			player_sprite.visible = false
+			print("Player " + str(i + 1) + " hidden as player_count is set to " + str(player_count))
 	
 	# Update the visual position of the current player
 	update_player_visual_position()
 
 # Function to update player visual position based on current player's position
 func update_player_visual_position():
-	if player_rects.size() == 0 or player_path_follows.size() == 0:
+	if player_sprites.size() == 0 or player_path_follows.size() == 0:
 		return
 	
 	# Check if the current player is already moving
@@ -344,7 +380,7 @@ func update_player_visual_position():
 
 # Function to update a specific player's visual position without changing the current player's turn
 func update_player_position_by_index(player_idx):
-	if player_rects.size() == 0 or player_path_follows.size() == 0 or player_idx < 0 or player_idx >= player_rects.size():
+	if player_sprites.size() == 0 or player_path_follows.size() == 0 or player_idx < 0 or player_idx >= player_sprites.size():
 		return
 	
 	# Get the specified player's position
@@ -501,7 +537,7 @@ func handle_wood_log_collision_for_player(player_idx):
 func _process(delta):
 	# Check for wood log collisions with all players
 	var wood_log_node = get_node_or_null("/root/GameBoard/WoodLog")
-	if wood_log_node and player_rects.size() > 0:
+	if wood_log_node and player_sprites.size() > 0:
 		# Update UI or game state based on wood log movement
 		if wood_log_node.is_moving:
 			# Disable dice button or show visual indicator that dice can't be rolled
@@ -512,7 +548,7 @@ func _process(delta):
 			
 			# Check collision only for active players based on player_count
 			for i in range(player_count):
-				var player = player_rects[i]
+				var player = player_sprites[i]
 				var player_pos = player_positions[i]
 				
 				# Simple collision detection - if wood log is moving and player is in unsafe position

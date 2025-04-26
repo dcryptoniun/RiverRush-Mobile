@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://le1g8pwneie1"]
+[gd_scene load_steps=15 format=3 uid="uid://le1g8pwneie1"]
 
 [ext_resource type="Texture2D" uid="uid://b3hecglg2d53k" path="res://assets/stone/startstone.png" id="1_bnqxs"]
 [ext_resource type="PackedScene" uid="uid://cgjc6axagv27g" path="res://scenes/tilemap.tscn" id="2_cwqdw"]
@@ -9,6 +9,10 @@
 [ext_resource type="Texture2D" uid="uid://2sv4d8qffypo" path="res://assets/stone/switchstone.png" id="6_ixnwj"]
 [ext_resource type="Script" uid="uid://dp7op76qqm2m1" path="res://scripts/game_board.gd" id="7_ixnwj"]
 [ext_resource type="PackedScene" uid="uid://c8yvnxgvxnvqw" path="res://scenes/wood_log.tscn" id="9_04ve2"]
+[ext_resource type="Texture2D" uid="uid://cibkjhra1kj6c" path="res://assets/Players/red.png" id="10_sax53"]
+[ext_resource type="Texture2D" uid="uid://c1h38vgc3fjm1" path="res://assets/Players/green.png" id="11_axant"]
+[ext_resource type="Texture2D" uid="uid://dh1bvs4nogkmc" path="res://assets/Players/blue.png" id="12_cac7a"]
+[ext_resource type="Texture2D" uid="uid://laaipvhvgtov" path="res://assets/Players/yellow.png" id="13_hl2y5"]
 
 [sub_resource type="Curve2D" id="Curve2D_cwqdw"]
 _data = {
@@ -300,12 +304,49 @@ text = "Roll Dice"
 position = Vector2(-132, -132)
 scale = Vector2(0.4, 0.4)
 
-[node name="Path2D" type="Path2D" parent="."]
+[node name="RedPath2D" type="Path2D" parent="."]
 curve = SubResource("Curve2D_cwqdw")
 
-[node name="PathFollow2D" type="PathFollow2D" parent="Path2D"]
+[node name="PathFollow2D" type="PathFollow2D" parent="RedPath2D"]
 position = Vector2(632, 1221)
-rotation = -2.30305
+rotates = false
+
+[node name="Sprite2D" type="Sprite2D" parent="RedPath2D/PathFollow2D"]
+scale = Vector2(0.15, 0.15)
+texture = ExtResource("10_sax53")
+
+[node name="GreenPath2D" type="Path2D" parent="."]
+curve = SubResource("Curve2D_cwqdw")
+
+[node name="PathFollow2D" type="PathFollow2D" parent="GreenPath2D"]
+position = Vector2(632, 1221)
+rotates = false
+
+[node name="Sprite2D" type="Sprite2D" parent="GreenPath2D/PathFollow2D"]
+scale = Vector2(0.15, 0.15)
+texture = ExtResource("11_axant")
+
+[node name="BluePath2D" type="Path2D" parent="."]
+curve = SubResource("Curve2D_cwqdw")
+
+[node name="PathFollow2D" type="PathFollow2D" parent="BluePath2D"]
+position = Vector2(632, 1221)
+rotates = false
+
+[node name="Sprite2D" type="Sprite2D" parent="BluePath2D/PathFollow2D"]
+scale = Vector2(0.15, 0.15)
+texture = ExtResource("12_cac7a")
+
+[node name="YellowPath2D" type="Path2D" parent="."]
+curve = SubResource("Curve2D_cwqdw")
+
+[node name="PathFollow2D" type="PathFollow2D" parent="YellowPath2D"]
+position = Vector2(632, 1221)
+rotates = false
+
+[node name="Sprite2D" type="Sprite2D" parent="YellowPath2D/PathFollow2D"]
+scale = Vector2(0.15, 0.15)
+texture = ExtResource("13_hl2y5")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
