@@ -30,8 +30,8 @@ var player_previous_positions = []  # Array to store previous positions of all p
 var player_checkpoints = []  # Array to store checkpoints of all players
 var player_path_follows = []  # Array to store PathFollow2D nodes for each player
 var player_tweens = []  # Array to store tweens for each player
+var bounce_tweens = []  # Array to store bounce animation tweens for each player
 var current_player_index = 0  # Index of the current player
-var player_turn_label = null  # Label to display current player's turn
 var dice_bg = null  # Reference to the dice background ColorRect
 var player_textures = []  # Array to store player textures
 
@@ -272,18 +272,54 @@ func _load_player_textures():
 		load("res://assets/players/yellow.png")
 	]
 
+# Function to start bounce animation for a player sprite
+func start_bounce_animation(player_index):
+	# Make sure the player index is valid
+	if player_index < 0 or player_index >= player_sprites.size():
+		return
+	
+	# Get the player sprite
+	var player_sprite = player_sprites[player_index]
+	
+	# Stop any existing bounce animation for this player
+	stop_bounce_animation(player_index)
+	
+	# Create a new tween for the bounce animation
+	var bounce_tween = create_tween()
+	bounce_tween.set_loops() # Make the animation loop indefinitely
+	
+	# Set up the bounce animation
+	# Move up
+	bounce_tween.tween_property(player_sprite, "position:y", -10, 0.3)
+	# Move down
+	bounce_tween.tween_property(player_sprite, "position:y", 0, 0.3)
+	
+	# Store the bounce tween
+	bounce_tweens[player_index] = bounce_tween
+
+# Function to stop bounce animation for a player sprite
+func stop_bounce_animation(player_index):
+	# Make sure the player index is valid
+	if player_index < 0 or player_index >= bounce_tweens.size():
+		return
+	
+	# Check if there's an active bounce tween for this player
+	var bounce_tween = bounce_tweens[player_index]
+	if bounce_tween and bounce_tween.is_valid():
+		# Stop the tween
+		bounce_tween.kill()
+		
+		# Reset the sprite position
+		player_sprites[player_index].position.y = 0
+
 # Function to initialize players from the scene
 func create_player():
 	# Load player textures
 	_load_player_textures()
 	
 	# Get reference to the player turn label and dice background in the scene
-	player_turn_label = %PlayerTurnLabel
 	dice_bg = get_node_or_null("MarginContainer/DiceContainer/DiceBG")
 	
-	# Set initial text and color for player 1
-	player_turn_label.text = "Player 1's Turn"
-	player_turn_label.add_theme_color_override("font_color", player_colors[0])
 	
 	# Set initial dice background color for player 1
 	if dice_bg:
@@ -293,6 +329,7 @@ func create_player():
 	player_sprites = []
 	player_path_follows = []
 	player_tweens = []
+	bounce_tweens = []
 	player_positions = []
 	player_previous_positions = []
 	player_checkpoints = []
@@ -337,6 +374,7 @@ func create_player():
 			
 			# Initialize tween array with null values
 			player_tweens.append(null)
+			bounce_tweens.append(null)
 			
 			# Initialize player position, previous position and checkpoint
 			player_positions.append(1)  # All players start at position 1
@@ -349,6 +387,9 @@ func create_player():
 	
 	# Update the visual position of the current player
 	update_player_visual_position()
+	
+	# Start bounce animation for the current player
+	start_bounce_animation(current_player_index)
 
 # Function to update player visual position based on current player's position
 func update_player_visual_position():
@@ -380,13 +421,17 @@ func update_player_visual_position():
 	
 	print("Player ", current_player_index + 1, " moving to position ", position, " (path offset: ", target_offset, ")")
 	
-	# Update the player turn label and dice background
-	player_turn_label.text = "Player " + str(current_player_index + 1) + "'s Turn"
-	player_turn_label.add_theme_color_override("font_color", player_colors[current_player_index])
 	
 	# Update dice background color
 	if dice_bg:
 		dice_bg.color = player_colors[current_player_index]
+	
+	# Stop bounce animation for all players
+	for i in range(player_sprites.size()):
+		stop_bounce_animation(i)
+	
+	# Start bounce animation for the current player
+	start_bounce_animation(current_player_index)
 
 # Function to update a specific player's visual position without changing the current player's turn
 func update_player_position_by_index(player_idx):
@@ -606,9 +651,6 @@ func _on_wood_log_movement_complete() -> void:
 	current_player_index = (current_player_index + 1) % player_count
 	print("Now it's Player ", current_player_index + 1, "'s turn")
 	
-	# Update the player turn label and dice background
-	player_turn_label.text = "Player " + str(current_player_index + 1) + "'s Turn"
-	player_turn_label.add_theme_color_override("font_color", player_colors[current_player_index])
 	
 	# Update dice background color
 	if dice_bg:
@@ -711,9 +753,6 @@ func move_player(player_node, steps):
 		current_player_index = (current_player_index + 1) % player_count
 		print("Now it's Player ", current_player_index + 1, "'s turn")
 		
-		# Update the player turn label and dice background
-		player_turn_label.text = "Player " + str(current_player_index + 1) + "'s Turn"
-		player_turn_label.add_theme_color_override("font_color", player_colors[current_player_index])
 		
 		# Update dice background color
 		if dice_bg:
