@@ -702,6 +702,10 @@ func check_game_over():
 		else:
 			print("Error: Game over menu not found or missing show_game_over method")
 
+# Function to get player colors
+func get_player_colors():
+	return player_colors
+
 # Function to generate player rankings
 func generate_rankings():
 	# Start with players who have finished (in order of finishing)

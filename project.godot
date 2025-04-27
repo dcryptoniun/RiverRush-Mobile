@@ -23,6 +23,14 @@ window/stretch/mode="viewport"
 window/stretch/aspect="expand"
 window/handheld/orientation=1
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/AdmobPlugin/plugin.cfg")
+
+[gui]
+
+theme/custom_font="uid://cn0gx2gejvvel"
+
 [rendering]
 
 textures/canvas_textures/default_texture_filter=2

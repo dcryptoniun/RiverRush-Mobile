@@ -33,6 +33,25 @@ func show_game_over(rankings):
 	# Store the rankings
 	player_rankings = rankings
 	
+	# Get player colors from game board if available
+	var player_colors = []
+	var game_board = get_tree().get_current_scene()
+	if game_board and game_board.has_method("get_player_colors"):
+		player_colors = game_board.get_player_colors()
+	elif game_board and "player_colors" in game_board:
+		player_colors = game_board.player_colors
+	else:
+		# Default colors if not available from game board
+		player_colors = [
+			Color(0.9, 0.1, 0.1, 0.8),  # Red (Player 1)
+			Color(0.1, 0.9, 0.1, 0.8),  # Green (Player 2)
+			Color(0.1, 0.1, 0.9, 0.8),  # Blue (Player 3)
+			Color(0.9, 0.9, 0.1, 0.8)   # Yellow (Player 4)
+		]
+	
+	# Color names for display
+	var color_names = ["Red", "Green", "Blue", "Yellow"]
+	
 	# Update the ranking labels
 	for i in range(rankings.size()):
 		var rank_label = get_node_or_null("VBoxContainer/RankingsContainer/Rank" + str(i + 1))
@@ -45,7 +64,16 @@ func show_game_over(rankings):
 			elif i == 2:
 				suffix = "rd"
 			
-			rank_label.text = str(i + 1) + suffix + ": Player " + str(rankings[i] + 1)
+			# Get player index and color
+			var player_index = rankings[i]
+			var player_color = player_colors[player_index] if player_index < player_colors.size() else Color.WHITE
+			var color_name = color_names[player_index] if player_index < color_names.size() else "Unknown"
+			
+			# Set text with color name in brackets
+			rank_label.text = str(i + 1) + suffix + ": Player " + str(player_index + 1) + " (" + color_name + ")"
+			
+			# Apply color to the label
+			rank_label.add_theme_color_override("font_color", player_color)
 			rank_label.visible = true
 	
 	# Show the game over menu
