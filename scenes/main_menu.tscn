@@ -99,4 +99,4 @@ metadata/_custom_type_script = "uid://di7656w2yb0r0"
 [connection signal="pressed" from="CanvasLayer/MarginContainer/VBoxContainer/HBoxContainer/StartButton2" to="." method="_on_start_button_2_pressed"]
 [connection signal="pressed" from="CanvasLayer/MarginContainer/VBoxContainer/HBoxContainer/StartButton3" to="." method="_on_start_button_3_pressed"]
 [connection signal="pressed" from="CanvasLayer/MarginContainer/VBoxContainer/HBoxContainer/StartButton4" to="." method="_on_start_button_4_pressed"]
-[connection signal="pressed" from="CanvasLayer/MarginContainer/VBoxContainer/HBoxContainer2/StartButton1" to="." method="_on_start_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/MarginContainer/VBoxContainer/HBoxContainer2/StartButton1" to="." method="_on_start_button_ai_pressed"]

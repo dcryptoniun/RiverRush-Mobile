@@ -73,9 +73,9 @@ func start_game_with_player_count(player_count: int, ai_enabled: bool = false) -
 	print("Starting game with ", player_count, " players", ", AI enabled: ", ai_enabled)
 
 
-# Start game with 2 players (second player is AI)
+# Start game with 2 players
 func _on_start_button_2_pressed() -> void:
-	start_game_with_player_count(2, true)
+	start_game_with_player_count(2)
 
 # Start game with 3 players
 func _on_start_button_3_pressed() -> void:
@@ -85,7 +85,6 @@ func _on_start_button_3_pressed() -> void:
 func _on_start_button_4_pressed() -> void:
 	start_game_with_player_count(4)
 
-# Legacy function for backward compatibility if needed
-func _on_start_button_pressed() -> void:
-	# Default to 2 players if the old start button is still in the scene
+# Start game with 2 players (second player is AI)
+func _on_start_button_ai_pressed() -> void:
 	start_game_with_player_count(2, true)
