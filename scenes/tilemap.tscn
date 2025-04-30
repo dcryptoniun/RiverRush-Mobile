@@ -1,5 +1,6 @@
-[gd_scene load_steps=8 format=3 uid="uid://cgjc6axagv27g"]
+[gd_scene load_steps=9 format=3 uid="uid://cgjc6axagv27g"]
 
+[ext_resource type="Texture2D" uid="uid://ct0xmm55yhth3" path="res://assets/Background.png" id="1_fofut"]
 [ext_resource type="Shader" uid="uid://bqmd46s11mg4x" path="res://water.gdshader" id="2_i8yab"]
 [ext_resource type="Texture2D" uid="uid://kxjphvitf0qs" path="res://icon.svg" id="3_v3dip"]
 
@@ -28,12 +29,17 @@ shader_parameter/noise2 = SubResource("NoiseTexture2D_ld261")
 shader_parameter/scroll1 = Vector2(0.1, 0.8)
 shader_parameter/scroll2 = Vector2(-0.1, -0.8)
 shader_parameter/distortion_strength = 0.2
-shader_parameter/tone_color = Color(0, 0.337255, 1, 0.701961)
+shader_parameter/tone_color = Color(0.234216, 0.484094, 1, 0.701961)
 shader_parameter/top_color = Color(1, 1, 1, 1)
 shader_parameter/light_start = 0.181
 shader_parameter/light_end = 0.014
 
 [node name="RiverTile" type="Node2D"]
+
+[node name="Background" type="Sprite2D" parent="."]
+position = Vector2(369.5, 722.5)
+scale = Vector2(1.8475, 1.445)
+texture = ExtResource("1_fofut")
 
 [node name="Icon" type="Sprite2D" parent="."]
 material = SubResource("ShaderMaterial_18xon")

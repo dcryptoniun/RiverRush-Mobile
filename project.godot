@@ -13,6 +13,8 @@ config_version=5
 config/name="RiverRush"
 run/main_scene="uid://8busquollqwo"
 config/features=PackedStringArray("4.4", "Mobile")
+boot_splash/fullsize=false
+boot_splash/image="uid://12i0rfirbuv3"
 config/icon="res://icon.svg"
 
 [display]
