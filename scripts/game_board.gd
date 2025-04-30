@@ -287,14 +287,14 @@ func store_stone_positions():
 				print("Stored position for ", stone_name, ": ", stone_node_positions[pos_key])
 
 # Function to load player textures
-func _load_player_textures():
-	# Load player textures from assets/players folder
-	player_textures = [
-		load("res://assets/players/red.png"),
-		load("res://assets/players/blue.png"),
-		load("res://assets/players/green.png"),
-		load("res://assets/players/yellow.png")
-	]
+# func _load_player_textures():
+# 	# Load player textures from assets/players folder
+# 	player_textures = [
+# 		load("res://assets/Players/red.png"),
+# 		load("res://assets/Players/blue.png"),
+# 		load("res://assets/Players/green.png"),
+# 		load("res://assets/Players/yellow.png")
+# 	]
 
 # Function to start bounce animation for a player sprite
 func start_bounce_animation(player_index):
@@ -339,7 +339,7 @@ func stop_bounce_animation(player_index):
 # Function to initialize players from the scene
 func create_player():
 	# Load player textures
-	_load_player_textures()
+	# _load_player_textures()
 	
 	# Get reference to the player turn label and dice background in the scene
 	dice_bg = get_node_or_null("MarginContainer/DiceContainer/DiceBG")

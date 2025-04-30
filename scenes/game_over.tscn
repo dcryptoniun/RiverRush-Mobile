@@ -93,6 +93,7 @@ text = "Main Menu"
 [node name="Admob" type="Node" parent="."]
 script = ExtResource("2_wqhvx")
 is_real = true
+banner_position = 1
 real_application_id = "ca-app-pub-6319704391115198~4533431907"
 real_interstitial_id = "ca-app-pub-6319704391115198/4664218440"
 metadata/_custom_type_script = "uid://di7656w2yb0r0"
