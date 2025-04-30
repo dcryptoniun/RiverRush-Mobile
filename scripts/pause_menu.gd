@@ -19,6 +19,11 @@ func _on_resume_button_pressed():
 
 # Restart button handler
 func _on_restart_button_pressed():
+	if _is_interstitial_loaded:
+		_is_interstitial_loaded = false
+		admob.show_interstitial_ad()
+	else:
+		admob.load_interstitial_ad()
 	# Resume the game before restarting
 	get_tree().paused = false
 	# Reload the current scene

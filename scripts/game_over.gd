@@ -1,7 +1,9 @@
 extends CanvasLayer
 
 # This script handles the game over menu functionality
+@onready var admob: Admob = $Admob as Admob
 
+var _is_interstitial_loaded: bool = false
 # Signal to notify when a player has reached the end
 signal player_reached_end(player_index)
 
@@ -84,6 +86,11 @@ func show_game_over(rankings):
 
 # Restart button handler
 func _on_restart_button_pressed():
+	if _is_interstitial_loaded:
+		_is_interstitial_loaded = false
+		admob.show_interstitial_ad()
+	else:
+		admob.load_interstitial_ad()
 	# Resume the game before restarting
 	get_tree().paused = false
 	# Reload the current scene
@@ -91,6 +98,11 @@ func _on_restart_button_pressed():
 
 # Main menu button handler
 func _on_main_menu_button_pressed():
+	if _is_interstitial_loaded:
+		_is_interstitial_loaded = false
+		admob.show_interstitial_ad()
+	else:
+		admob.load_interstitial_ad()
 	# Resume the game before changing scenes
 	get_tree().paused = false
 	
@@ -109,3 +121,11 @@ func _on_main_menu_button_pressed():
 	# Remove the old scene
 	get_tree().root.remove_child(current_scene)
 	current_scene.queue_free()
+	
+	
+func _on_admob_initialization_completed(status_data: InitializationStatus) -> void:
+	_is_interstitial_loaded = true
+
+
+func _on_admob_interstitial_ad_loaded(ad_id: String) -> void:
+	_is_interstitial_loaded = true

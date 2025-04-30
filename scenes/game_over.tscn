@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://c1mu54xpg43yf"]
+[gd_scene load_steps=3 format=3 uid="uid://c1mu54xpg43yf"]
 
 [ext_resource type="Script" uid="uid://1iu5m3awm6wf" path="res://scripts/game_over.gd" id="1_yvnxv"]
+[ext_resource type="Script" uid="uid://di7656w2yb0r0" path="res://addons/AdmobPlugin/Admob.gd" id="2_wqhvx"]
 
 [node name="GameOverMenu" type="CanvasLayer"]
 process_mode = 3
@@ -89,5 +90,14 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 35
 text = "Main Menu"
 
+[node name="Admob" type="Node" parent="."]
+script = ExtResource("2_wqhvx")
+is_real = true
+real_application_id = "ca-app-pub-6319704391115198~4533431907"
+real_interstitial_id = "ca-app-pub-6319704391115198/4664218440"
+metadata/_custom_type_script = "uid://di7656w2yb0r0"
+
 [connection signal="pressed" from="VBoxContainer/RestartButton" to="." method="_on_restart_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/MainMenuButton" to="." method="_on_main_menu_button_pressed"]
+[connection signal="initialization_completed" from="Admob" to="." method="_on_admob_initialization_completed"]
+[connection signal="interstitial_ad_loaded" from="Admob" to="." method="_on_admob_interstitial_ad_loaded"]
