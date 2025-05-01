@@ -50,6 +50,15 @@ func _on_banner_ad_loaded(ad_id: String) -> void:
 	# Show the banner ad
 	admob_node.show_banner_ad()
 
+# Open the settings menu when settings button is pressed
+func _on_settings_button_pressed() -> void:
+	# Show banner ad before changing the scene
+	if admob_node:
+		admob_node.show_banner_ad()
+	
+	# Change to settings menu scene
+	get_tree().change_scene_to_file("res://scenes/settings_menu.tscn")
+
 # Called when banner ad fails to load
 func _on_banner_ad_failed_to_load(ad_id: String, error_data) -> void:
 	print("Banner ad failed to load: " + ad_id)

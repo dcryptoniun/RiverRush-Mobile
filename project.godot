@@ -17,6 +17,10 @@ boot_splash/fullsize=false
 boot_splash/image="uid://12i0rfirbuv3"
 config/icon="res://icon.svg"
 
+[autoload]
+
+SoundManager="*res://scripts/sound_manager.gd"
+
 [display]
 
 window/size/viewport_width=720
@@ -24,10 +28,6 @@ window/size/viewport_height=1440
 window/stretch/mode="viewport"
 window/stretch/aspect="expand"
 window/handheld/orientation=1
-
-[autoload]
-
-SoundManager="*res://scripts/sound_manager.gd"
 
 [editor_plugins]
 
