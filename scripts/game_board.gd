@@ -60,6 +60,10 @@ func _ready():
 		player_count = get_tree().get_current_scene().get_meta("player_count")
 		print("Player count set to: ", player_count)
 	
+	# Ensure background music is playing
+	if not SoundManager.music_player.playing:
+		SoundManager.play_music("background")
+	
 	# Initialize AI mode if enabled
 	if has_meta("ai_enabled"):
 		ai_enabled = get_meta("ai_enabled")
@@ -180,6 +184,9 @@ func roll_dice():
 	if dice_button:
 		dice_button.disabled = true
 		
+	# Play dice roll sound effect
+	SoundManager.play_sfx("swipe")
+	
 	is_rolling = true
 	player_move_completed = false  # Reset player movement flag
 	

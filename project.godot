@@ -25,6 +25,10 @@ window/stretch/mode="viewport"
 window/stretch/aspect="expand"
 window/handheld/orientation=1
 
+[autoload]
+
+SoundManager="*res://scripts/sound_manager.gd"
+
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/AdmobPlugin/plugin.cfg")
