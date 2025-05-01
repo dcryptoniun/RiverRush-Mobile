@@ -104,23 +104,31 @@ func _on_sfx_volume_changed(value: float):
 
 
 func _on_master_mute_pressed():
+	# Play UI sound effect
+	SoundManager.play_sfx("ui")
 	var is_muted = SoundManager.toggle_mute_master()
 	update_mute_button(master_mute_btn, is_muted)
 	save_settings()
 
 
 func _on_music_mute_pressed():
+	# Play UI sound effect
+	SoundManager.play_sfx("ui")
 	var is_muted = SoundManager.toggle_mute_music()
 	update_mute_button(music_mute_btn, is_muted)
 	save_settings()
 
 
 func _on_sfx_mute_pressed():
+	# Play UI sound effect
+	SoundManager.play_sfx("ui")
 	var is_muted = SoundManager.toggle_mute_sfx()
 	update_mute_button(sfx_mute_btn, is_muted)
 	save_settings()
 
 
 func _on_back_button_pressed():
+	# Play UI sound effect
+	SoundManager.play_sfx("ui")
 	# Return to previous scene
 	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")

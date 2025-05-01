@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 [autoload]
 
 SoundManager="*res://scripts/sound_manager.gd"
+SettingsMenu="*res://scenes/settings_menu.tscn"
 
 [display]
 

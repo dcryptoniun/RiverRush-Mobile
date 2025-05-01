@@ -52,6 +52,8 @@ func _on_banner_ad_loaded(ad_id: String) -> void:
 
 # Open the settings menu when settings button is pressed
 func _on_settings_button_pressed() -> void:
+	# Play UI sound effect
+	SoundManager.play_sfx("ui")
 	# Show banner ad before changing the scene
 	if admob_node:
 		admob_node.show_banner_ad()

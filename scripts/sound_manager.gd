@@ -56,9 +56,9 @@ func load_audio_resources():
 	music_tracks["background"] = load("res://assets/SFX/awesomeness.wav")
 	
 	# Load sound effects
-	# Example: sound_effects["dice_roll"] = load("res://assets/SFX/dice_roll.wav")
-	# Add more sound effects as needed
 	sound_effects["swipe"] = load("res://assets/SFX/Swipe.mp3")
+	sound_effects["ui"] = load("res://assets/SFX/ui.mp3")
+	sound_effects["dice_roll"] = load("res://assets/SFX/rolling_dice_sfx.mp3")
 
 # Play background music
 func play_music(track_name: String):

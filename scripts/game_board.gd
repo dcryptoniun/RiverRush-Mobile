@@ -185,7 +185,7 @@ func roll_dice():
 		dice_button.disabled = true
 		
 	# Play dice roll sound effect
-	SoundManager.play_sfx("swipe")
+	SoundManager.play_sfx("dice_roll")
 	
 	is_rolling = true
 	player_move_completed = false  # Reset player movement flag
@@ -661,6 +661,8 @@ func _process(delta):
 
 # Add pause button functionality
 func _on_pause_button_pressed():
+	# Play UI sound effect
+	SoundManager.play_sfx("ui")
 	if pause_menu:
 		pause_menu.visible = true
 		get_tree().paused = true

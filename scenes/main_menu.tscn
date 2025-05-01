@@ -1,8 +1,16 @@
-[gd_scene load_steps=4 format=3 uid="uid://8busquollqwo"]
+[gd_scene load_steps=12 format=3 uid="uid://8busquollqwo"]
 
 [ext_resource type="Script" uid="uid://pa04vd2x2510" path="res://scripts/main_menu.gd" id="1_ekxnf"]
 [ext_resource type="PackedScene" uid="uid://cgjc6axagv27g" path="res://scenes/tilemap.tscn" id="1_l6cm7"]
+[ext_resource type="Texture2D" uid="uid://bnwuxcqm23elc" path="res://assets/buttons/withai_normal.svg" id="3_8ln24"]
 [ext_resource type="Script" uid="uid://di7656w2yb0r0" path="res://addons/AdmobPlugin/Admob.gd" id="3_bqqt6"]
+[ext_resource type="Texture2D" uid="uid://bh1od5j30rdwq" path="res://assets/buttons/2p_normal.svg" id="3_lgwnu"]
+[ext_resource type="Texture2D" uid="uid://buw8brhy5ho0x" path="res://assets/buttons/2p_pressed.svg" id="4_flqon"]
+[ext_resource type="Texture2D" uid="uid://bb3yt0c7txngp" path="res://assets/buttons/withai_pressed.svg" id="4_rtw2f"]
+[ext_resource type="Texture2D" uid="uid://c8maj40gpyhef" path="res://assets/buttons/3p_normal.svg" id="5_rcqid"]
+[ext_resource type="Texture2D" uid="uid://btifi3fr3odjg" path="res://assets/buttons/3p_pressed.svg" id="6_1ajci"]
+[ext_resource type="Texture2D" uid="uid://dxwgpbv71ls0l" path="res://assets/buttons/4p_normal.svg" id="7_7b55j"]
+[ext_resource type="Texture2D" uid="uid://wa74tgckv60y" path="res://assets/buttons/4p_pressed.svg" id="8_5pajh"]
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -36,61 +44,82 @@ theme_override_constants/margin_top = 50
 theme_override_constants/margin_right = 50
 theme_override_constants/margin_bottom = 50
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/MarginContainer"]
+[node name="VBoxContainer3" type="VBoxContainer" parent="CanvasLayer/MarginContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="CanvasLayer/MarginContainer/VBoxContainer3"]
 layout_mode = 2
 size_flags_horizontal = 4
-size_flags_vertical = 4
-theme_override_constants/separation = 25
+size_flags_vertical = 6
 
-[node name="RiverRushLabel" type="Label" parent="CanvasLayer/MarginContainer/VBoxContainer"]
+[node name="RiverRushLabel" type="Label" parent="CanvasLayer/MarginContainer/VBoxContainer3/VBoxContainer2"]
 layout_mode = 2
+size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 64
 text = "River Rush"
 horizontal_alignment = 1
 
-[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/MarginContainer/VBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/MarginContainer/VBoxContainer3"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 2
+theme_override_constants/separation = 25
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/MarginContainer/VBoxContainer3/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 theme_override_constants/separation = 25
 
-[node name="StartButton2" type="Button" parent="CanvasLayer/MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="StartButton2" type="TextureButton" parent="CanvasLayer/MarginContainer/VBoxContainer3/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 8
-theme_override_font_sizes/font_size = 64
-text = "2 P"
+texture_normal = ExtResource("3_lgwnu")
+texture_pressed = ExtResource("4_flqon")
+texture_hover = ExtResource("4_flqon")
+texture_disabled = ExtResource("4_flqon")
+texture_focused = ExtResource("4_flqon")
 
-[node name="StartButton3" type="Button" parent="CanvasLayer/MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="StartButton3" type="TextureButton" parent="CanvasLayer/MarginContainer/VBoxContainer3/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 8
-theme_override_font_sizes/font_size = 64
-text = "3 P"
+texture_normal = ExtResource("5_rcqid")
+texture_pressed = ExtResource("6_1ajci")
+texture_hover = ExtResource("6_1ajci")
+texture_disabled = ExtResource("6_1ajci")
+texture_focused = ExtResource("6_1ajci")
 
-[node name="StartButton4" type="Button" parent="CanvasLayer/MarginContainer/VBoxContainer/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 8
-theme_override_font_sizes/font_size = 64
-text = "4 P"
-
-[node name="HBoxContainer2" type="HBoxContainer" parent="CanvasLayer/MarginContainer/VBoxContainer"]
+[node name="HBoxContainer2" type="HBoxContainer" parent="CanvasLayer/MarginContainer/VBoxContainer3/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 theme_override_constants/separation = 25
 
-[node name="StartButton1" type="Button" parent="CanvasLayer/MarginContainer/VBoxContainer/HBoxContainer2"]
+[node name="StartButton4" type="TextureButton" parent="CanvasLayer/MarginContainer/VBoxContainer3/VBoxContainer/HBoxContainer2"]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 8
-theme_override_font_sizes/font_size = 64
-text = "Play with AI"
+texture_normal = ExtResource("7_7b55j")
+texture_pressed = ExtResource("8_5pajh")
+texture_hover = ExtResource("8_5pajh")
+texture_disabled = ExtResource("8_5pajh")
+texture_focused = ExtResource("8_5pajh")
 
-[node name="SettingsButton" type="Button" parent="CanvasLayer/MarginContainer/VBoxContainer"]
+[node name="StartButton1" type="TextureButton" parent="CanvasLayer/MarginContainer/VBoxContainer3/VBoxContainer/HBoxContainer2"]
 layout_mode = 2
 size_flags_horizontal = 4
+size_flags_vertical = 8
+texture_normal = ExtResource("3_8ln24")
+texture_pressed = ExtResource("4_rtw2f")
+texture_hover = ExtResource("4_rtw2f")
+texture_disabled = ExtResource("4_rtw2f")
+texture_focused = ExtResource("4_rtw2f")
+
+[node name="SettingsButton" type="Button" parent="CanvasLayer/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 8
 size_flags_vertical = 8
 theme_override_font_sizes/font_size = 48
 text = "Settings"
@@ -103,8 +132,8 @@ real_banner_id = "ca-app-pub-6319704391115198/9968516012"
 real_interstitial_id = "ca-app-pub-6319704391115198/4664218440"
 metadata/_custom_type_script = "uid://di7656w2yb0r0"
 
-[connection signal="pressed" from="CanvasLayer/MarginContainer/VBoxContainer/HBoxContainer/StartButton2" to="." method="_on_start_button_2_pressed"]
-[connection signal="pressed" from="CanvasLayer/MarginContainer/VBoxContainer/HBoxContainer/StartButton3" to="." method="_on_start_button_3_pressed"]
-[connection signal="pressed" from="CanvasLayer/MarginContainer/VBoxContainer/HBoxContainer/StartButton4" to="." method="_on_start_button_4_pressed"]
-[connection signal="pressed" from="CanvasLayer/MarginContainer/VBoxContainer/HBoxContainer2/StartButton1" to="." method="_on_start_button_ai_pressed"]
-[connection signal="pressed" from="CanvasLayer/MarginContainer/VBoxContainer/SettingsButton" to="." method="_on_settings_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/MarginContainer/VBoxContainer3/VBoxContainer/HBoxContainer/StartButton2" to="." method="_on_start_button_2_pressed"]
+[connection signal="pressed" from="CanvasLayer/MarginContainer/VBoxContainer3/VBoxContainer/HBoxContainer/StartButton3" to="." method="_on_start_button_3_pressed"]
+[connection signal="pressed" from="CanvasLayer/MarginContainer/VBoxContainer3/VBoxContainer/HBoxContainer2/StartButton4" to="." method="_on_start_button_4_pressed"]
+[connection signal="pressed" from="CanvasLayer/MarginContainer/VBoxContainer3/VBoxContainer/HBoxContainer2/StartButton1" to="." method="_on_start_button_ai_pressed"]
+[connection signal="pressed" from="CanvasLayer/MarginContainer/SettingsButton" to="." method="_on_settings_button_pressed"]
