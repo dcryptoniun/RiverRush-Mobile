@@ -1,8 +1,8 @@
 extends Control
 
 # Import required classes for GDPR consent handling
-const ConsentInformation = preload("res://addons/AdmobPlugin/model/ConsentInformation.gd")
-const ConsentRequestParameters = preload("res://addons/AdmobPlugin/model/ConsentRequestParameters.gd")
+const ConsentInfoClass = preload("res://addons/AdmobPlugin/model/ConsentInformation.gd")
+const ConsentParamsClass = preload("res://addons/AdmobPlugin/model/ConsentRequestParameters.gd")
 
 # We no longer need the option button reference since we're using separate buttons
 # for each player count
@@ -131,12 +131,12 @@ func check_consent_status() -> void:
 		print("Current consent status: ", consent_status)
 		
 		match consent_status:
-			ConsentInformation.ConsentStatus.UNKNOWN:
+			ConsentInfoClass.ConsentStatus.UNKNOWN:
 				# Need to update consent information
 				print("Consent status unknown, updating consent info")
 				update_consent_information()
 				
-			ConsentInformation.ConsentStatus.REQUIRED:
+			ConsentInfoClass.ConsentStatus.REQUIRED:
 				# Consent is required, check if form is available
 				print("Consent required, checking form availability")
 				if admob_node.is_consent_form_available():
@@ -144,12 +144,12 @@ func check_consent_status() -> void:
 				else:
 					load_consent_form()
 				
-			ConsentInformation.ConsentStatus.NOT_REQUIRED:
+			ConsentInfoClass.ConsentStatus.NOT_REQUIRED:
 				# Consent not required, load ads
 				print("Consent not required, loading ads")
 				load_ads()
 				
-			ConsentInformation.ConsentStatus.OBTAINED:
+			ConsentInfoClass.ConsentStatus.OBTAINED:
 				# Consent already obtained, load ads
 				print("Consent already obtained, loading ads")
 				load_ads()
@@ -158,9 +158,9 @@ func check_consent_status() -> void:
 func update_consent_information() -> void:
 	if admob_node:
 		# Create consent request parameters
-		var params = ConsentRequestParameters.new()
+		var params = ConsentParamsClass.new()
 		# For testing, you can set debug geography
-		# params.set_debug_geography(ConsentRequestParameters.DebugGeography.DEBUG_GEOGRAPHY_EEA)
+		# params.set_debug_geography(ConsentParamsClass.DebugGeography.DEBUG_GEOGRAPHY_EEA)
 		
 		# Update consent information
 		admob_node.update_consent_info(params)

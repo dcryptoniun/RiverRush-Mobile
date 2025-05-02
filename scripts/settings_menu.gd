@@ -40,16 +40,30 @@ func _ready():
 	update_mute_button(sfx_mute_btn, AudioServer.is_bus_mute(SoundManager.SFX_BUS))
 	update_mute_button(ambient_mute_btn, AudioServer.is_bus_mute(SoundManager.SFX_BUS))
 	
-	# Connect signals
-	master_slider.value_changed.connect(_on_master_volume_changed)
-	music_slider.value_changed.connect(_on_music_volume_changed)
-	sfx_slider.value_changed.connect(_on_sfx_volume_changed)
-	ambient_slider.value_changed.connect(_on_ambient_volume_changed)
+	# Connect signals - check if they're already connected first
+	if !master_slider.is_connected("value_changed", _on_master_volume_changed):
+		master_slider.value_changed.connect(_on_master_volume_changed)
 	
-	master_mute_btn.pressed.connect(_on_master_mute_pressed)
-	music_mute_btn.pressed.connect(_on_music_mute_pressed)
-	sfx_mute_btn.pressed.connect(_on_sfx_mute_pressed)
-	ambient_mute_btn.pressed.connect(_on_ambient_mute_pressed)
+	if !music_slider.is_connected("value_changed", _on_music_volume_changed):
+		music_slider.value_changed.connect(_on_music_volume_changed)
+	
+	if !sfx_slider.is_connected("value_changed", _on_sfx_volume_changed):
+		sfx_slider.value_changed.connect(_on_sfx_volume_changed)
+	
+	if !ambient_slider.is_connected("value_changed", _on_ambient_volume_changed):
+		ambient_slider.value_changed.connect(_on_ambient_volume_changed)
+	
+	if !master_mute_btn.is_connected("pressed", _on_master_mute_pressed):
+		master_mute_btn.pressed.connect(_on_master_mute_pressed)
+	
+	if !music_mute_btn.is_connected("pressed", _on_music_mute_pressed):
+		music_mute_btn.pressed.connect(_on_music_mute_pressed)
+	
+	if !sfx_mute_btn.is_connected("pressed", _on_sfx_mute_pressed):
+		sfx_mute_btn.pressed.connect(_on_sfx_mute_pressed)
+	
+	if !ambient_mute_btn.is_connected("pressed", _on_ambient_mute_pressed):
+		ambient_mute_btn.pressed.connect(_on_ambient_mute_pressed)
 
 # Load settings from config file
 func load_settings():
