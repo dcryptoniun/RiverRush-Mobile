@@ -4,8 +4,8 @@ extends CanvasLayer
 @onready var admob: Admob = $Admob as Admob
 
 var _is_interstitial_loaded: bool = false
-# Signal to notify when a player has reached the end
-signal player_reached_end(player_index)
+# This signal was unused and has been removed
+# If you need to track when players reach the end, use the game_board's players_finished array
 
 # Array to store player rankings
 var player_rankings = []

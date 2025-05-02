@@ -433,10 +433,10 @@ func update_player_visual_position():
 		return
 	
 	# Get current player's position
-	var position = player_positions[current_player_index]
+	var player_pos = player_positions[current_player_index]
 	
 	# Calculate path offset for the current position (0-1 range)
-	var target_offset = float(position - 1) / 25.0  # 26 positions, 0-25 index range
+	var target_offset = float(player_pos - 1) / 25.0  # 26 positions, 0-25 index range
 	
 	# Get the PathFollow2D for the current player
 	var path_follow = player_path_follows[current_player_index]
@@ -450,7 +450,7 @@ func update_player_visual_position():
 	# Store the tween for this player
 	player_tweens[current_player_index] = tween
 	
-	print("Player ", current_player_index + 1, " moving to position ", position, " (path offset: ", target_offset, ")")
+	print("Player ", current_player_index + 1, " moving to position ", player_pos, " (path offset: ", target_offset, ")")
 	
 	
 	# Update dice background color
@@ -470,10 +470,10 @@ func update_player_position_by_index(player_idx):
 		return
 	
 	# Get the specified player's position
-	var position = player_positions[player_idx]
+	var player_pos = player_positions[player_idx]
 	
 	# Calculate path offset for the position (0-1 range)
-	var target_offset = float(position - 1) / 25.0  # 26 positions, 0-25 index range
+	var target_offset = float(player_pos - 1) / 25.0  # 26 positions, 0-25 index range
 	
 	# Get the PathFollow2D for this player
 	var path_follow = player_path_follows[player_idx]
@@ -485,7 +485,7 @@ func update_player_position_by_index(player_idx):
 	# Store the tween for this player
 	player_tweens[player_idx] = tween
 	
-	print("Player ", player_idx + 1, " respawned to position ", position, " (path offset: ", target_offset, ")")
+	print("Player ", player_idx + 1, " respawned to position ", player_pos, " (path offset: ", target_offset, ")")
 
 # Board configuration
 var stone_positions = {
@@ -521,8 +521,8 @@ var current_checkpoint = 1  # Start position
 var player_position = 1
 
 # Enhanced stone effect handler
-func process_stone_effect(position):
-	var stone = stone_positions[position]
+func process_stone_effect(stone_position):
+	var stone = stone_positions[stone_position]
 	match stone.type:
 		"frog":
 			var jump_to = stone.jump_to
@@ -554,11 +554,11 @@ func process_stone_effect(position):
 			# Roll the dice again - this will trigger another player movement
 			roll_dice()
 			
-			return position
+			return stone_position
 		"checkpoint":
-			player_checkpoints[current_player_index] = position
-			print("Player ", current_player_index + 1, " reached checkpoint! New respawn point set to position ", position)
-			return position
+			player_checkpoints[current_player_index] = stone_position
+			print("Player ", current_player_index + 1, " reached checkpoint! New respawn point set to position ", stone_position)
+			return stone_position
 		"end":
 			print("Player ", current_player_index + 1, " reached the end!")
 			# Check if this player has already finished
@@ -569,14 +569,14 @@ func process_stone_effect(position):
 				
 				# Check if game is over based on majority rule
 				check_game_over()
-			return position
+			return stone_position
 		_:
-			return position
+			return stone_position
 
 # Function to check if a position is safe from wood log
-func is_safe_position(position):
-	if position in stone_positions:
-		return stone_positions[position].get("safe", false)
+func is_safe_position(check_position):
+	if check_position in stone_positions:
+		return stone_positions[check_position].get("safe", false)
 	return false
 
 # Function to handle wood log collision for the current player
