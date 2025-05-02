@@ -86,6 +86,9 @@ func show_game_over(rankings):
 
 # Restart button handler
 func _on_restart_button_pressed():
+	# Play UI sound effect
+	SoundManager.play_sfx("ui")
+	
 	if _is_interstitial_loaded:
 		_is_interstitial_loaded = false
 		admob.show_interstitial_ad()
@@ -98,6 +101,9 @@ func _on_restart_button_pressed():
 
 # Main menu button handler
 func _on_main_menu_button_pressed():
+	# Play UI sound effect
+	SoundManager.play_sfx("ui")
+	
 	if _is_interstitial_loaded:
 		_is_interstitial_loaded = false
 		admob.show_interstitial_ad()

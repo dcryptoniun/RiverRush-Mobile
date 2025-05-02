@@ -10,16 +10,18 @@ const SFX_BUS = 2
 
 # Audio players
 var music_player: AudioStreamPlayer
+var ambient_player: AudioStreamPlayer  # Player for ambient sounds like river
 var sfx_players: Array[AudioStreamPlayer] = []
 var num_sfx_players = 5  # Number of sound effect players to create for pooling
 
 # Audio resources
 var music_tracks = {}
 var sound_effects = {}
+var ambient_sounds = {}  # Dictionary for ambient sounds
 
 # Volume settings
 var master_volume: float = 1.0
-var music_volume: float = 1.0
+var music_volume: float = 0.6  # Reduced default music volume
 var sfx_volume: float = 1.0
 
 func _ready():
@@ -41,6 +43,13 @@ func initialize_audio_players():
 	music_player.process_mode = Node.PROCESS_MODE_ALWAYS  # Continue playing during pause
 	add_child(music_player)
 	
+	# Create ambient sound player
+	ambient_player = AudioStreamPlayer.new()
+	ambient_player.bus = "SFX"
+	ambient_player.volume_db = linear_to_db(sfx_volume)
+	ambient_player.process_mode = Node.PROCESS_MODE_ALWAYS  # Continue playing during pause
+	add_child(ambient_player)
+	
 	# Create pool of sound effect players
 	for i in range(num_sfx_players):
 		var sfx_player = AudioStreamPlayer.new()
@@ -59,6 +68,13 @@ func load_audio_resources():
 	sound_effects["swipe"] = load("res://assets/SFX/Swipe.mp3")
 	sound_effects["ui"] = load("res://assets/SFX/ui.mp3")
 	sound_effects["dice_roll"] = load("res://assets/SFX/rolling_dice_sfx.mp3")
+	sound_effects["wood_rolling"] = load("res://assets/SFX/Wood Rolling.mp3")
+	
+	# Load ambient sounds
+	ambient_sounds["river"] = load("res://assets/SFX/RiverSoundEffect.mp3")
+	
+	# Start playing ambient river sound
+	play_ambient("river")
 
 # Play background music
 func play_music(track_name: String):
@@ -135,6 +151,7 @@ func set_sfx_volume(volume: float):
 	AudioServer.set_bus_volume_db(SFX_BUS, linear_to_db(sfx_volume))
 	for player in sfx_players:
 		player.volume_db = linear_to_db(sfx_volume)
+	ambient_player.volume_db = linear_to_db(sfx_volume)
 
 # Mute/unmute master audio
 func toggle_mute_master():
@@ -150,3 +167,26 @@ func toggle_mute_music():
 func toggle_mute_sfx():
 	AudioServer.set_bus_mute(SFX_BUS, !AudioServer.is_bus_mute(SFX_BUS))
 	return AudioServer.is_bus_mute(SFX_BUS)
+
+# Play ambient sound on loop
+func play_ambient(ambient_name: String):
+	if not ambient_sounds.has(ambient_name):
+		push_error("Ambient sound '" + ambient_name + "' not found")
+		return
+	
+	# Set the ambient sound stream
+	ambient_player.stream = ambient_sounds[ambient_name]
+	
+	# Enable looping
+	ambient_player.stream.loop = true
+	
+	# Set very low volume for river sound specifically
+	if ambient_name == "river":
+		ambient_player.volume_db = linear_to_db(0.2)  # Very minimal volume for river
+	
+	# Play the ambient sound
+	ambient_player.play()
+
+# Stop ambient sound
+func stop_ambient():
+	ambient_player.stop()

@@ -40,6 +40,9 @@ func start_movement(from_direction = 1):
 	position = Vector2(-132, -132)
 	print("Log moving from fixed position x:-132, y:-132 downward")
 	
+	# Play wood rolling sound effect
+	SoundManager.play_sfx("wood_rolling")
+	
 	# Make log visible
 	visible = true
 

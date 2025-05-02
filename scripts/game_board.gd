@@ -586,6 +586,9 @@ func handle_wood_log_collision():
 		print("Player ", current_player_index + 1, " is safe on position ", current_pos, "!")
 		return
 	
+	# Play swipe sound effect when player is hit
+	SoundManager.play_sfx("swipe")
+	
 	# Make sure checkpoint is updated if player is at or beyond position 13
 	if player_positions[current_player_index] >= 13 and player_checkpoints[current_player_index] < 13:
 		player_checkpoints[current_player_index] = 13
@@ -611,6 +614,9 @@ func handle_wood_log_collision_for_player(player_idx):
 	if is_safe_position(current_pos):
 		print("Player ", player_idx + 1, " is safe on position ", current_pos, "!")
 		return
+	
+	# Play swipe sound effect when player is hit
+	SoundManager.play_sfx("swipe")
 	
 	# Make sure checkpoint is updated if player is at or beyond position 13
 	if player_positions[player_idx] >= 13 and player_checkpoints[player_idx] < 13:

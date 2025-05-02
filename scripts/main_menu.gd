@@ -100,18 +100,26 @@ func start_game_with_player_count(player_count: int, ai_enabled: bool = false) -
 
 # Start game with 2 players
 func _on_start_button_2_pressed() -> void:
+	# Play UI sound effect
+	SoundManager.play_sfx("ui")
 	start_game_with_player_count(2)
 
 # Start game with 3 players
 func _on_start_button_3_pressed() -> void:
+	# Play UI sound effect
+	SoundManager.play_sfx("ui")
 	start_game_with_player_count(3)
 
 # Start game with 4 players
 func _on_start_button_4_pressed() -> void:
+	# Play UI sound effect
+	SoundManager.play_sfx("ui")
 	start_game_with_player_count(4)
 
 # Start game with 2 players (second player is AI)
 func _on_start_button_ai_pressed() -> void:
+	# Play UI sound effect
+	SoundManager.play_sfx("ui")
 	start_game_with_player_count(2, true)
 
 # GDPR Consent handling functions

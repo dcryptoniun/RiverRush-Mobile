@@ -21,6 +21,11 @@ config/icon="uid://12i0rfirbuv3"
 SoundManager="*res://scripts/sound_manager.gd"
 SettingsMenu="*res://scenes/settings_menu.tscn"
 
+[debug]
+
+gdscript/warnings/unused_variable=0
+gdscript/warnings/unused_parameter=0
+
 [display]
 
 window/size/viewport_width=720

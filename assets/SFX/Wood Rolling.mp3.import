@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://ds4i2cjyx6sev"
+path="res://.godot/imported/Wood Rolling.mp3-a20ec1fd7a0d2aa02712b62d2bac71cb.mp3str"
+
+[deps]
+
+source_file="res://assets/SFX/Wood Rolling.mp3"
+dest_files=["res://.godot/imported/Wood Rolling.mp3-a20ec1fd7a0d2aa02712b62d2bac71cb.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
