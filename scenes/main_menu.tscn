@@ -11,7 +11,7 @@
 [ext_resource type="Texture2D" uid="uid://btifi3fr3odjg" path="res://assets/buttons/3p_pressed.svg" id="6_1ajci"]
 [ext_resource type="Texture2D" uid="uid://dxwgpbv71ls0l" path="res://assets/buttons/4p_normal.svg" id="7_7b55j"]
 [ext_resource type="Texture2D" uid="uid://wa74tgckv60y" path="res://assets/buttons/4p_pressed.svg" id="8_5pajh"]
-[ext_resource type="Texture2D" uid="uid://b6jnfglvbql4h" path="res://assets/buttons/setting.png" id="11_flqon"]
+[ext_resource type="Texture2D" uid="uid://ek41asii7d33" path="res://assets/buttons/settings_icon.png" id="11_flqon"]
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3

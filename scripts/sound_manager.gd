@@ -23,6 +23,7 @@ var ambient_sounds = {}  # Dictionary for ambient sounds
 var master_volume: float = 1.0
 var music_volume: float = 0.6  # Reduced default music volume
 var sfx_volume: float = 1.0
+var ambient_volume: float = 0.2  # Default ambient volume (river sounds)
 
 func _ready():
 	# Initialize audio players
@@ -151,7 +152,11 @@ func set_sfx_volume(volume: float):
 	AudioServer.set_bus_volume_db(SFX_BUS, linear_to_db(sfx_volume))
 	for player in sfx_players:
 		player.volume_db = linear_to_db(sfx_volume)
-	ambient_player.volume_db = linear_to_db(sfx_volume)
+
+# Set ambient sound volume (0.0 to 1.0)
+func set_ambient_volume(volume: float):
+	ambient_volume = clamp(volume, 0.0, 1.0)
+	ambient_player.volume_db = linear_to_db(ambient_volume)
 
 # Mute/unmute master audio
 func toggle_mute_master():
@@ -180,9 +185,8 @@ func play_ambient(ambient_name: String):
 	# Enable looping
 	ambient_player.stream.loop = true
 	
-	# Set very low volume for river sound specifically
-	if ambient_name == "river":
-		ambient_player.volume_db = linear_to_db(0.2)  # Very minimal volume for river
+	# Use the ambient volume setting
+	ambient_player.volume_db = linear_to_db(ambient_volume)
 	
 	# Play the ambient sound
 	ambient_player.play()
