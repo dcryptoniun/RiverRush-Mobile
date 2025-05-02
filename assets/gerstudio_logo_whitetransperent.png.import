@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://8a3q466vm6h3"
-path="res://.godot/imported/regia_waterplant_tile_anim_strip_8.png-d123b1a7e4a5367b722b20339b650fc2.ctex"
+uid="uid://b0ecadfsrjlv0"
+path="res://.godot/imported/gerstudio_logo_whitetransperent.png-0a559efd18fd26d6311f1c5404396dfc.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/regia_waterplant_tile_anim_strip_8.png"
-dest_files=["res://.godot/imported/regia_waterplant_tile_anim_strip_8.png-d123b1a7e4a5367b722b20339b650fc2.ctex"]
+source_file="res://assets/gerstudio_logo_whitetransperent.png"
+dest_files=["res://.godot/imported/gerstudio_logo_whitetransperent.png-0a559efd18fd26d6311f1c5404396dfc.ctex"]
 
 [params]
 
